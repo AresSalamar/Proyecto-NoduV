@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuntes de Diseño y Patrones - NoduV</title>
+    
+    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ¡NUEVO! Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F6F8; /* noduv-fondo */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* Ocultar vistas de apuntes por defecto */
+        .note-view {
+            display: none;
+        }
+        
+        /* Mostrar la vista activa */
+        .note-view.active {
+            display: block;
+        }
+        
+        /* Estilos para Tareas */
+        .task-item span.completed {
+            @apply line-through text-noduv-gris-medio;
+        }
+        
+        /* ¡NUEVO! Estilo para el botón de marcador */
+        .bookmark-btn.saved {
+            fill: #4A90E2; /* noduv-celeste */
+            color: #4A90E2;
+        }
+
+    </style>
+    
+    <script>
+        // Configuración personalizada de Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Paleta de colores de NoduV
+                    colors: {
+                        'noduv-azul': '#1C3D5A',
+                        'noduv-celeste': '#4A90E2',
+                        'noduv-exito': '#7ED321',
+                        'noduv-alerta': '#F5A623',
+                        'noduv-error': '#D0021B',
+                        'noduv-texto': '#333333',
+                        'noduv-gris-medio': '#888888',
+                        'noduv-gris-claro': '#D8D8D8',
+                        'noduv-fondo': '#F4F6F8',
+                    },
+                    // Fuentes de NoduV
+                    fontFamily: {
+                        'hammersmith': ['"Hammersmith One"', 'sans-serif'],
+                        'inter': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-noduv-fondo text-noduv-texto">
+
+    <!-- 
+      BARRA DE NAVEGACIÓN SUPERIOR
+    -->
+    <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
+        <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <!-- Botón de Volver al Dashboard -->
+                <a href="dashboard.html#cursos" class="p-2 text-noduv-azul" aria-label="Volver al Dashboard">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </a>
+                
+                <!-- Logo NoduV -->
+                <a href="dashboard.html" class="font-hammersmith text-2xl font-bold flex items-center text-noduv-azul">
+                    <span class="text-noduv-exito text-3xl mr-1 transform -rotate-10">✓</span>
+                    NoduV
+                </a>
+            </div>
+            
+            <!-- Navegación Desktop -->
+            <nav id="desktop-nav" class="hidden md:flex items-center space-x-6">
+                <a href="dashboard.html#inicio" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Inicio</a>
+                <a href="dashboard.html#cursos" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Cursos</a>
+                <a href="dashboard.html#comunidad" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Comunidad</a>
+                <a href="dashboard.html#rutas" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Rutas de Aprendizaje</a>
+                <a href="dashboard.html#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Mi Perfil</a>
+            </nav>
+
+            <!-- Botones (Desktop y Móvil) -->
+            <div class="flex items-center">
+                <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+                <button id="mobile-menu-button-dash" class="md:hidden text-noduv-azul ml-4" aria-label="Abrir menú">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
+             <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
+            <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
+            <a href="dashboard.html#comunidad" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Comunidad</a>
+            <a href="dashboard.html#rutas" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Rutas de Aprendizaje</a>
+            <a href="dashboard.html#perfil" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Mi Perfil</a>
+            <div class="p-4">
+                <button id="open-upload-button-mobile" class="w-full bg-noduv-celeste text-white font-inter font-medium py-3 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+      CONTENEDOR PRINCIPAL
+    -->
+    <main class="container mx-auto px-4 md:px-8 py-10">
+        
+        <!-- Sección de Apuntes de Diseño -->
+        <section id="diseno">
+
+            <!-- Vista 1: Resumen (Mostrada por defecto) -->
+            <div id="diseno-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
+                <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Volver a Cursos
+                </a>
+                <h1 class="text-4xl md:text-5xl font-bold text-noduv-azul mb-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
+                    Diseño y Patrones de Software
+                </h1>
+                <p class="text-lg text-noduv-gris-medio">Apuntes sobre patrones de diseño creacionales, estructurales y de comportamiento.</p>
+                <div class="mt-4">
+                    <button id="show-diseno-notes-btn" class="bg-noduv-celeste text-white font-semibold py-2 px-6 rounded-lg hover:bg-noduv-azul transition-colors">
+                        Ver Apuntes del curso
+                    </button>
+                </div>
+                <div class="mt-6 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto">Patrones Comunes:</h3>
+                    <ul class="list-disc list-inside mt-2 text-noduv-gris-medio space-y-1">
+                        <li>Singleton</li>
+                        <li>Factory Method</li>
+                        <li>Observer</li>
+                    </ul>
+                </div>
+                <div class="mt-8 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto mb-3">Tareas Pendientes ✅</h3>
+                    <form id="todo-form" class="flex gap-2 mb-4">
+                        <input type="text" id="todo-input" placeholder="Añadir nueva tarea..." class="flex-grow bg-noduv-fondo border border-noduv-gris-claro rounded-lg px-3 py-2 focus:ring-2 focus:ring-noduv-celeste focus:border-transparent outline-none transition-all">
+                        <button type="submit" class="bg-noduv-celeste hover:bg-noduv-azul text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Añadir
+                        </button>
+                    </form>
+                    <div id="todo-list" class="space-y-3">
+                        <!-- Tareas se renderizan aquí -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista 2: Índice de Apuntes (Oculta) -->
+            <div id="diseno-notes" class="note-view">
+                <header class="text-center mb-8 relative">
+                    <button id="back-to-diseno-summary-btn" class="absolute top-1/2 -translate-y-1/2 left-0 p-2 rounded-full text-noduv-gris-medio hover:bg-noduv-fondo" title="Volver">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h1 class="text-3xl font-bold text-noduv-azul">Índice de Temas</h1>
+                    <p class="text-noduv-gris-medio mt-2">Apuntes del curso de Diseño y Patrones.</p>
+                </header>
+
+                <main>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Tarjeta de Apunte 1: Intro -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-intro-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Introducción a los Patrones de Diseño</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="diseno-intro" 
+                                        data-title="Introducción a los Patrones de Diseño" 
+                                        data-desc="Un resumen sobre qué son, su historia y por qué son importantes." 
+                                        data-url="curso_diseno.html#diseno-topic-intro"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Un resumen sobre qué son, su historia y por qué son importantes.</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-6 border-2 border-dashed border-noduv-gris-claro flex items-center justify-center">
+                            <p class="text-noduv-gris-medio text-center">Próximamente más apuntes...</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- Vista 3: Detalle de Tema (Intro) (Oculta) -->
+            <div id="diseno-topic-intro" class="note-view">
+                <header class="mb-8 relative">
+                    <button id="back-to-diseno-index-btn" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Introducción a los Patrones de Diseño</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="diseno-intro" 
+                                data-title="Introducción a los Patrones de Diseño" 
+                                data-desc="Un resumen sobre qué son, su historia y por qué son importantes." 
+                                data-url="curso_diseno.html#diseno-topic-intro"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">¿Qué es un Patrón?</h2>
+                            <p>Podría definirse como una serie de variables y constantes identificables dentro de un conjunto mayor de datos. Es una solución recurrente a un problema que ocurre con frecuencia.</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 shadow-md md:col-span-2">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Pattern Language</h2>
+                            <p class="mb-4">El concepto nació en la arquitectura en 1977 con Christopher Alexander. Un "lenguaje de patrones" es un método para describir buenas prácticas de diseño dentro de un campo de especialización.</p>
+                            <div class="bg-noduv-fondo p-4 rounded-md">
+                                <h3 class="font-semibold text-lg mb-2">Elementos de un Patrón:</h3>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li><strong class="text-noduv-celeste">Nombre:</strong> Para identificarlo rápidamente.</li>
+                                    <li><strong class="text-noduv-celeste">Problema:</strong> El contexto en el que se aplica.</li>
+                                    <li><strong class="text-noduv-celeste">Fuerzas:</strong> Las restricciones o metas a considerar.</li>
+                                    <li><strong class="text-noduv-celeste">Solución:</strong> La descripción de cómo resolver el problema.</li>
+                                    <li><strong class="text-noduv-celeste">Beneficios / Consecuencias:</strong> Los resultados.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Software Design Pattern: Los Inicios</h2>
+                        <p>La idea se aplicó a la programación por primera vez en la conferencia <strong class="text-noduv-texto">OOPSLA de 1987</strong>. Los programadores <strong class="text-noduv-texto">Kent Beck</strong> y <strong class="text-noduv-texto">Ward Cunningham</strong> tomaron las ideas del arquitecto Christopher Alexander y las aplicaron al diseño de interfaces de usuario en SmallTalk, proponiendo que un "lenguaje de patrones" guía al diseñador de software con soluciones funcionales.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md md:col-span-2">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">La Llegada del "Gang of Four" (GoF)</h2>
+                            <p class="mb-4">En 1994, Erich Gamma, Richard Helm, Ralph Johnson y John Vlissides publicaron el libro fundamental "Design Patterns: Elements of Reusable Object-Oriented Software". Recopilaron y documentaron 23 patrones que eran soluciones comunes y exitosas.</p>
+                            <blockquote class="border-l-4 border-noduv-celeste pl-4 text-noduv-gris-medio italic">
+                                "Un patrón describe un problema el cual ocurre una y otra vez en nuestro ambiente, y además describen el núcleo de la solución a tal problema, de tal manera que puedes usar esta solución millones de veces, sin hacer lo mismo dos veces."
+                            </blockquote>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Calidad y los "WTFs/Minute"</h2>
+                            <p>La métrica humorística "WTFs/Minute" (confusiones por minuto) ilustra el valor de los patrones. Un buen código, usando patrones, es predecible y claro, reduciendo los "WTFs" y aumentando la calidad.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-semibold text-center mb-6">Clasificación de Patrones (GoF)</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-white rounded-lg p-6 shadow-md">
+                                <h3 class="text-xl font-bold text-noduv-exito mb-3">1. Creacionales</h3>
+                                <p class="mb-3">Se enfocan en cómo crear objetos de forma flexible, ocultando la lógica de creación.</p>
+                                <p class="text-sm text-noduv-gris-medio">Builder, Factory Method, Prototype, Singleton, Abstract Factory.</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-6 shadow-md">
+                                <h3 class="text-xl font-bold text-noduv-celeste mb-3">2. Estructurales</h3>
+                                <p class="mb-3">Tratan sobre cómo componer clases y objetos en estructuras más grandes.</p>
+                                <p class="text-sm text-noduv-gris-medio">Adapter, Bridge, Composite, Decorator, Façade, Flyweight, Proxy.</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-6 shadow-md">
+                                <h3 class="text-xl font-bold text-noduv-alerta mb-3">3. De Comportamiento</h3>
+                                <p class="mb-3">Se ocupan de la comunicación y responsabilidades entre objetos.</p>
+                                <p class="text-sm text-noduv-gris-medio">Chain of Responsibility, Command, Interpreter, Iterator, Mediator, Memento, Observer, State, Strategy, Template Method, Visitor.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Card: Beneficios -->
+                        <div class="bg-white rounded-lg p-6 shadow-md md:col-span-2">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Beneficios Principales</h2>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <svg class="w-6 h-6 text-noduv-exito mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span><strong class="text-noduv-texto">Elementos Reusables:</strong> Soluciones probadas para distintos problemas.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-6 h-6 text-noduv-exito mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span><strong class="text-noduv-texto">Efectividad Comprobada:</strong> Reducen riesgos y tiempo de desarrollo.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <svg class="w-6 h-6 text-noduv-exito mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span><strong class="text-noduv-texto">Vocabulario Común:</strong> Formalizan un lenguaje compartido entre desarrolladores.</span>
+                                </li>
+                                 <li class="flex items-start">
+                                    <svg class="w-6 h-6 text-noduv-exito mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span><strong class="text-noduv-texto">Estandarización:</strong> Ayudan a que las soluciones sean más predecibles.</span>
+                                </li>
+                                 <li class="flex items-start">
+                                    <svg class="w-6 h-6 text-noduv-exito mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span><strong class="text-noduv-texto">Facilitan el Aprendizaje:</strong> Transmiten el conocimiento ya existente.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Card: Resumen Final -->
+                        <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Resumen Final: Puntos Clave</h2>
+                            <ul class="list-disc list-inside space-y-2 text-noduv-texto">
+                                <li>Describen cómo resolver <strong class="text-noduv-texto">problemas recurrentes</strong>.</li>
+                                <li>Ofrecen <strong class="text-noduv-texto">soluciones generalizadas</strong> en forma de plantillas.</li>
+                                <li>Es más importante <strong class="text-noduv-texto">comprender el concepto</strong> que memorizar la implementación exacta.</li>
+                                <li>Los 23 patrones del GoF se clasifican en: <strong class="text-noduv-texto">Creacionales, Estructurales y de Comportamiento.</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      Footer (Consistente en todas las páginas)
+    -->
+    <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
+        <div class="container mx-auto">
+            <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 
+      Enlace al archivo JavaScript
+    -->
+    <script src="scripts/curso_diseno.js" defer></script>
+
+</body>
+</html>

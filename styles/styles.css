@@ -1,0 +1,90 @@
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1{
+    color: #333333;
+    text-align: center;
+}
+p{
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666666;
+}
+a{
+    color: #1a73e8;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+.container{
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+.button{
+    background-color: #1a73e8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.button:hover{
+    background-color: #155ab6;
+}
+.footer{
+    text-align: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+    color: #888888;
+    margin-top: 20px;
+}
+.navbar{
+    background-color: #333333;
+    overflow: hidden;
+}
+.navbar a{
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar a:hover{
+    background-color: #575757;
+}
+.card{
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    padding: 16px;
+    margin: 16px 0;
+}
+.card:hover{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+.input-field{
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+}
+.input-field:focus{
+    border: 2px solid #1a73e8;
+}
+.table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.table th, .table td{
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+.table th{
+    background-color: #f2f2f2;
+    text-align: left;
+}

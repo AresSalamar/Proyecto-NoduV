@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuntes de Física - NoduV</title>
+    
+    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ¡NUEVO! Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F6F8; /* noduv-fondo */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* Ocultar vistas de apuntes por defecto */
+        .note-view {
+            display: none;
+        }
+        
+        .note-view.active {
+            display: block;
+        }
+        
+        /* Estilos para Tareas */
+        .task-item span.completed {
+            @apply line-through text-noduv-gris-medio;
+        }
+        
+        /* ¡NUEVO! Estilo para el botón de marcador */
+        .bookmark-btn.saved {
+            fill: #4A90E2; /* noduv-celeste */
+            color: #4A90E2;
+        }
+
+    </style>
+    
+    <script>
+        // Configuración personalizada de Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Paleta de colores de NoduV
+                    colors: {
+                        'noduv-azul': '#1C3D5A',
+                        'noduv-celeste': '#4A90E2',
+                        'noduv-exito': '#7ED321',
+                        'noduv-alerta': '#F5A623',
+                        'noduv-error': '#D0021B',
+                        'noduv-texto': '#333333',
+                        'noduv-gris-medio': '#888888',
+                        'noduv-gris-claro': '#D8D8D8',
+                        'noduv-fondo': '#F4F6F8',
+                    },
+                    // Fuentes de NoduV
+                    fontFamily: {
+                        'hammersmith': ['"Hammersmith One"', 'sans-serif'],
+                        'inter': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-noduv-fondo text-noduv-texto">
+
+    <!-- 
+      BARRA DE NAVEGACIÓN SUPERIOR
+    -->
+    <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
+        <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <!-- Botón de Volver al Dashboard -->
+                <a href="dashboard.html#cursos" class="p-2 text-noduv-azul" aria-label="Volver al Dashboard">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </a>
+                
+                <!-- Logo NoduV -->
+                <a href="dashboard.html" class="font-hammersmith text-2xl font-bold flex items-center text-noduv-azul">
+                    <span class="text-noduv-exito text-3xl mr-1 transform -rotate-10">✓</span>
+                    NoduV
+                </a>
+            </div>
+            
+            <!-- Navegación Desktop -->
+            <nav id="desktop-nav" class="hidden md:flex items-center space-x-6">
+                <a href="dashboard.html#inicio" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Inicio</a>
+                <a href="dashboard.html#cursos" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Cursos</a>
+                <a href="dashboard.html#comunidad" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Comunidad</a>
+                <a href="dashboard.html#rutas" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Rutas de Aprendizaje</a>
+                <a href="dashboard.html#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Mi Perfil</a>
+            </nav>
+
+            <!-- Botones (Desktop y Móvil) -->
+            <div class="flex items-center">
+                <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+                <button id="mobile-menu-button-dash" class="md:hidden text-noduv-azul ml-4" aria-label="Abrir menú">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
+             <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
+            <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
+            <a href="dashboard.html#comunidad" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Comunidad</a>
+            <a href="dashboard.html#rutas" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Rutas de Aprendizaje</a>
+            <a href="dashboard.html#perfil" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Mi Perfil</a>
+            <div class="p-4">
+                <button id="open-upload-button-mobile" class="w-full bg-noduv-celeste text-white font-inter font-medium py-3 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+      CONTENEDOR PRINCIPAL
+    -->
+    <main class="container mx-auto px-4 md:px-8 py-10">
+        
+        <!-- Sección de Apuntes de Física -->
+        <section id="fisica">
+
+            <!-- Vista 1: Resumen (Mostrada por defecto) -->
+            <div id="fisica-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
+                <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Volver a Cursos
+                </a>
+                <h1 class="text-4xl md:text-5xl font-bold text-noduv-azul mb-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    Física
+                </h1>
+                <p class="text-lg text-noduv-gris-medio">Notas de clases y lab. Incluye leyes fundamentales y problemas prácticos.</p>
+                <div class="mt-4">
+                    <button id="show-fisica-notes-btn" class="bg-noduv-celeste text-white font-semibold py-2 px-6 rounded-lg hover:bg-noduv-azul transition-colors">
+                        Ver Apuntes del curso
+                    </button>
+                </div>
+                <div class="mt-6 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto">Leyes Importantes:</h3>
+                    <ul class="list-disc list-inside mt-2 text-noduv-gris-medio space-y-1">
+                        <li>Leyes de Newton</li>
+                        <li>Ley de Ohm</li>
+                        <li>Leyes de la Termodinámica</li>
+                    </ul>
+                </div>
+                <div class="mt-8 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto mb-3">Tareas Pendientes ✅</h3>
+                    <form id="todo-form" class="flex gap-2 mb-4">
+                        <input type="text" id="todo-input" placeholder="Añadir nueva tarea..." class="flex-grow bg-noduv-fondo border border-noduv-gris-claro rounded-lg px-3 py-2 focus:ring-2 focus:ring-noduv-celeste focus:border-transparent outline-none transition-all">
+                        <button type="submit" class="bg-noduv-celeste hover:bg-noduv-azul text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Añadir
+                        </button>
+                    </form>
+                    <div id="todo-list" class="space-y-3">
+                        <!-- Tareas se renderizan aquí -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista 2: Índice de Apuntes (Oculta) -->
+            <div id="fisica-notes" class="note-view">
+                <header class="text-center mb-8 relative">
+                    <button id="back-to-fisica-summary-btn" class="absolute top-1/2 -translate-y-1/2 left-0 p-2 rounded-full text-noduv-gris-medio hover:bg-noduv-fondo" title="Volver">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h1 class="text-3xl font-bold text-noduv-azul">Índice de Temas de Física</h1>
+                    <p class="text-noduv-gris-medio mt-2">Apuntes del curso de Física.</p>
+                </header>
+                <main>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Tarjeta de Apunte 1: Newton -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-newton-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Fuerzas y Leyes de Newton</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="fisica-newton" 
+                                        data-title="Fuerzas y Leyes de Newton" 
+                                        data-desc="Conceptos de fuerza, DCL y las tres leyes..." 
+                                        data-url="curso_fisica.html#fisica-topic-newton"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Conceptos de fuerza, DCL y las tres leyes fundamentales del movimiento.</p>
+                        </div>
+
+                        <!-- Tarjeta de Apunte 2: Cinemática -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-cinematica-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Cinemática</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="fisica-cinematica" 
+                                        data-title="Cinemática" 
+                                        data-desc="Conceptos fundamentales de MRU y MRUV." 
+                                        data-url="curso_fisica.html#fisica-topic-cinematica"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Conceptos fundamentales de MRU y MRUV.</p>
+                        </div>
+                        
+                        <!-- Tarjeta de Apunte 3: Proyectiles -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-proyectiles-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Movimiento de Proyectiles</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="fisica-proyectiles" 
+                                        data-title="Movimiento de Proyectiles" 
+                                        data-desc="Análisis del movimiento parabólico y sus componentes." 
+                                        data-url="curso_fisica.html#fisica-topic-proyectiles"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Análisis del movimiento parabólico y sus componentes.</p>
+                        </div>
+
+                        <div class="bg-white rounded-lg p-6 border-2 border-dashed border-noduv-gris-claro flex items-center justify-center">
+                            <p class="text-noduv-gris-medio text-center">Próximamente más apuntes...</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Vista 3: Detalle de Tema (Newton) (Oculta) -->
+            <div id="fisica-topic-newton" class="note-view">
+                <header class="mb-8 relative">
+                    <button id="back-to-fisica-index-btn" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Fuerzas y Leyes de Newton</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="fisica-newton" 
+                                data-title="Fuerzas y Leyes de Newton" 
+                                data-desc="Conceptos de fuerza, DCL y las tres leyes..." 
+                                data-url="curso_fisica.html#fisica-topic-newton"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">¿Qué es la Fuerza?</h2>
+                            <p>En física, una fuerza es cualquier interacción que, sin oposición, cambiará el movimiento de un objeto.</p>
+                            <div class="mt-4 bg-noduv-fondo p-3 rounded-md">
+                                <p><strong class="text-noduv-celeste">Tipo:</strong> Magnitud Vectorial.</p>
+                                <p><strong class="text-noduv-celeste">Unidad S.I.:</strong> Newton (N).</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 shadow-md md:col-span-2">
+                            <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Diagrama de Cuerpo Libre (DCL)</h2>
+                            <p class="mb-4">Es tu herramienta más importante. Consiste en aislar un objeto y dibujar <strong class="text-noduv-texto">todas las fuerzas</strong> que actúan sobre él como vectores.</p>
+                            <div class="bg-noduv-fondo border-2 border-dashed border-noduv-gris-claro rounded-lg flex items-center justify-center h-40">
+                                <p class="text-noduv-gris-medio">[Diagrama de un bloque en plano inclinado]</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-noduv-azul mb-6">Fuerzas Fundamentales en Dinámica</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">1. Peso (W)</h3>
+                            <p class="mb-4">Es la fuerza de gravedad. Siempre apunta verticalmente hacia abajo.</p>
+                            <div class="formula-box bg-noduv-fondo border-l-4 border-noduv-celeste p-4 rounded-md">
+                                <code class="text-lg font-mono">W = m ⋅ g</code>
+                                <ul class="text-sm mt-2 list-disc list-inside">
+                                    <li><strong>W:</strong> Peso (N)</li>
+                                    <li><strong>m:</strong> Masa (kg)</li>
+                                    <li><strong>g:</strong> Gravedad (≈9.8 m/s²)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">2. Fuerza Normal (N)</h3>
+                            <p>La fuerza de "soporte" de una superficie. Es siempre <strong class="text-noduv-celeste">perpendicular</strong> a la superficie.</p>
+                            <div class="bg-noduv-fondo border-2 border-dashed border-noduv-gris-claro rounded-lg flex items-center justify-center h-24 mt-4">
+                                <p class="text-noduv-gris-medio">[Fuerza Normal vs Peso]</p>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">3. Fricción (f)</h3>
+                            <p class="mb-4">Se opone al movimiento. Es <strong class="text-noduv-celeste">paralela</strong> a la superficie.</p>
+                            <div class="formula-box bg-noduv-fondo border-l-4 border-noduv-celeste p-4 rounded-md">
+                                <code class="text-lg font-mono">f ≤ μ ⋅ N</code>
+                                 <ul class="text-sm mt-2 list-disc list-inside">
+                                    <li><strong>f:</strong> Fricción (N)</li>
+                                    <li><strong>μ:</strong> Coeficiente</li>
+                                    <li><strong>N:</strong> Normal (N)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                         <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">4. Tensión (T)</h3>
+                            <p>Fuerza transmitida por una cuerda. Siempre <strong class="text-noduv-celeste">"jala"</strong> a lo largo de la cuerda.</p>
+                        </div>
+                         <div class="bg-white rounded-lg p-6 shadow-md md:col-span-2">
+                            <h3 class="text-xl font-semibold mb-3">5. Fuerza Elástica (Fₑ) - Ley de Hooke</h3>
+                            <p class="mb-4">Fuerza de un resorte al deformarse. Se opone a la deformación.</p>
+                            <div class="formula-box bg-noduv-fondo border-l-4 border-noduv-celeste p-4 rounded-md">
+                                <code class="text-lg font-mono">Fₑ = -k ⋅ x</code>
+                                <ul class="text-sm mt-2 list-disc list-inside">
+                                    <li><strong>Fₑ:</strong> F. Elástica (N)</li>
+                                    <li><strong>k:</strong> Constante (N/m)</li>
+                                    <li><strong>x:</strong> Desplazamiento (m)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">1ª Ley de Newton: Inercia</h2>
+                        <p class="mb-4 text-lg">"Un objeto en reposo sigue en reposo, y uno en movimiento sigue en movimiento con V=cte, a menos que una fuerza neta actúe sobre él."</p>
+                        <div class="formula-box bg-noduv-fondo border-l-4 border-noduv-celeste p-4 rounded-md text-center">
+                            <code class="text-xl font-mono">ΣF = 0</code>
+                        </div>
+                    </div>
+                     <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">2ª Ley de Newton: Aceleración</h2>
+                        <p class="mb-4 text-lg">"La aceleración es directamente proporcional a la fuerza neta e inversamente proporcional a la masa."</p>
+                        <div class="formula-box bg-noduv-fondo border-l-4 border-noduv-celeste p-4 rounded-md text-center">
+                            <code class="text-xl font-mono">ΣF = m ⋅ a</code>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">3ª Ley de Newton: Acción y Reacción</h2>
+                        <p class="mb-4 text-lg">"Para cada acción, hay una reacción igual y opuesta."</p>
+                        <p>Las fuerzas siempre ocurren en pares. F(A→B) = -F(B→A).</p>
+                    </div>
+                    <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Resumen para no Olvidar</h2>
+                        <ul class="list-disc list-inside space-y-2 text-noduv-celeste">
+                            <li><strong>1ª Ley:</strong> Si <strong class="text-noduv-texto">ΣF = 0</strong>, el cuerpo está en equilibrio.</li>
+                            <li><strong>2ª Ley:</strong> Si <strong class="text-noduv-texto">ΣF ≠ 0</strong>, el cuerpo acelera (<strong class="text-noduv-texto">ΣF = m⋅a</strong>).</li>
+                            <li><strong>3ª Ley:</strong> Las fuerzas vienen en pares (acción-reacción).</li>
+                            <li>¡El <strong class="text-noduv-texto">DCL</strong> es el primer paso para todo!</li>
+                        </ul>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Vista 4: Detalle de Tema (Cinemática) (Oculta) -->
+            <div id="fisica-topic-cinematica" class="note-view">
+                 <header class="mb-8 relative">
+                    <button id="back-to-fisica-index-btn-cinematica" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Cinemática: Conceptos</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="fisica-cinematica" 
+                                data-title="Cinemática" 
+                                data-desc="Conceptos fundamentales de MRU y MRUV." 
+                                data-url="curso_fisica.html#fisica-topic-cinematica"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Tipos de Magnitudes</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="bg-noduv-fondo p-3 rounded-md">
+                                <h3 class="font-semibold text-noduv-celeste">Magnitudes Escalares</h3>
+                                <p class="text-sm">Se definen con un valor y una unidad. Ej: tiempo (s), distancia (m), masa (kg).</p>
+                            </div>
+                            <div class="bg-noduv-fondo p-3 rounded-md">
+                                <h3 class="font-semibold text-noduv-celeste">Magnitudes Vectoriales</h3>
+                                <p class="text-sm">Necesitan valor, unidad y dirección. Ej: posición, velocidad, aceleración.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Definiciones de Movimiento Unidimensional</h2>
+                        <div class="space-y-4">
+                            <p><strong class="text-noduv-texto">Posición (x(m)):</strong> Localización de un objeto respecto a un origen (vector).</p>
+                            <p><strong class="text-noduv-texto">Desplazamiento (Δx(m)):</strong> Cambio en la posición. <code class="text-noduv-celeste font-mono">Δx = x_f - x_i</code>. Es un vector.</p>
+                            <p><strong class="text-noduv-texto">Distancia (d(m)):</strong> Longitud total del camino recorrido. Es un escalar.</p>
+                            <p><strong class="text-noduv-texto">Velocidad Media (v_m (m/s)):</strong> Tasa de cambio de la posición. <code class="text-noduv-celeste font-mono">v_m = Δx / Δt</code> (vector).</p>
+                            <p><strong class="text-noduv-texto">Rapidez Media (m/s):</strong> Distancia total entre tiempo. Es un escalar.</p>
+                            <p><strong class="text-noduv-texto">Aceleración Media (a_m (m/s²)):</strong> Tasa de cambio de la velocidad. <code class="text-noduv-celeste font-mono">a_m = Δv / Δt</code> (vector).</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Movimiento Rectilíneo Uniforme (MRU)</h2>
+                        <p class="mb-4">Ocurre cuando la velocidad de un objeto es constante, por lo tanto su aceleración es cero.</p>
+                        <div class="bg-noduv-fondo p-4 rounded-lg">
+                            <div class="bg-gray-200 border-l-4 border-noduv-celeste p-4 rounded-md mt-4">
+                                <code class="text-lg font-mono text-noduv-celeste font-bold">x = x₀ + v⋅t</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Movimiento Rectilíneo Uniformemente Variado (MRUV)</h2>
+                        <p class="mb-4">Describe el movimiento de un objeto con aceleración constante y no nula.</p>
+                         <div class="bg-noduv-fondo p-4 rounded-lg">
+                            <div class="bg-gray-200 border-l-4 border-noduv-celeste p-4 rounded-md mt-4 space-y-2">
+                                <code class="block text-md font-mono text-noduv-celeste font-bold">v = v₀ + a⋅t</code>
+                                <code class="block text-md font-mono text-noduv-celeste font-bold">x = x₀ + v₀t + ½ a⋅t²</code>
+                                <code class="block text-md font-mono text-noduv-celeste font-bold">v² = v₀² + 2a⋅Δx</code>
+                                <code class="block text-md font-mono text-noduv-celeste font-bold">Δx = ½(v₀ + v)t</code>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- Vista 5: Detalle de Tema (Proyectiles) (Oculta) -->
+            <div id="fisica-topic-proyectiles" class="note-view">
+                <header class="mb-8 relative">
+                    <button id="back-to-fisica-index-btn-proyectiles" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Apuntes de Física: Movimiento de Proyectiles</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="fisica-proyectiles" 
+                                data-title="Movimiento de Proyectiles" 
+                                data-desc="Análisis del movimiento parabólico y sus componentes." 
+                                data-url="curso_fisica.html#fisica-topic-proyectiles"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Análisis del Movimiento</h2>
+                        <p>Un proyectil se mueve bajo la influencia de la gravedad. Su movimiento se descompone en dos ejes para simplificar el análisis.</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h3 class="text-xl font-semibold text-noduv-celeste mb-3">Componentes de la Velocidad Inicial (v₀)</h3>
+                        <p class="mb-3">La velocidad inicial se descompone usando el ángulo de lanzamiento (α₀):</p>
+                        <div class="space-y-2">
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">v₀x = v₀ cos(α₀)</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">v₀y = v₀ sen(α₀)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h3 class="text-xl font-semibold text-noduv-celeste mb-3">Eje Horizontal (MRU)</h3>
+                        <p class="mb-3">Velocidad constante, aceleración nula.</p>
+                        <div class="space-y-2">
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">a_x = 0</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">v_x = v₀x</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">x = x₀ + v₀x ⋅ t</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h3 class="text-xl font-semibold text-noduv-celeste mb-3">Eje Vertical (MRUV)</h3>
+                        <p class="mb-3">Aceleración constante (gravedad).</p>
+                        <div class="space-y-2">
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">a_y = -9.81 m/s²</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">v_y = v₀y + a_y ⋅ t</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">y = y₀ + v₀y ⋅ t + ½ a_y ⋅ t²</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h3 class="text-xl font-semibold text-noduv-celeste mb-3">Otras Fórmulas Verticales</h3>
+                        <div class="space-y-2">
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">v_y² = v₀y² + 2a_y ⋅ Δy</p>
+                            <p class="formula bg-noduv-fondo border-l-4 border-noduv-celeste text-noduv-celeste p-2 rounded">Δy = ½(v₀y + v_y) ⋅ t</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold text-noduv-celeste mb-3">Puntos Clave</h3>
+                        <ul class="list-disc list-inside text-noduv-texto space-y-2">
+                            <li>La clave es la <strong>independencia de los movimientos</strong>: lo que sucede en el eje horizontal no afecta al vertical, y viceversa.</li>
+                            <li>En el punto más alto de la trayectoria, la componente vertical de la velocidad (<code class="font-mono">v_y</code>) es momentáneamente <strong>cero</strong>.</li>
+                        </ul>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      Footer (Consistente en todas las páginas)
+    -->
+    <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
+        <div class="container mx-auto">
+            <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 
+      Enlace al archivo JavaScript
+    -->
+    <script src="scripts/curso_fisica.js" defer></script>
+
+</body>
+</html>

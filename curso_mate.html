@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuntes de Matemáticas - NoduV</title>
+    
+    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F6F8; /* noduv-fondo */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* Ocultar vistas de apuntes por defecto */
+        .note-view {
+            display: none;
+        }
+        .note-view.active {
+            display: block;
+        }
+        
+        /* Estilos para Tareas */
+        .task-item span.completed {
+            @apply line-through text-noduv-gris-medio;
+        }
+    </style>
+    
+    <script>
+        // Configuración personalizada de Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Paleta de colores de NoduV
+                    colors: {
+                        'noduv-azul': '#1C3D5A',
+                        'noduv-celeste': '#4A90E2',
+                        'noduv-exito': '#7ED321',
+                        'noduv-alerta': '#F5A623',
+                        'noduv-error': '#D0021B',
+                        'noduv-texto': '#333333',
+                        'noduv-gris-medio': '#888888',
+                        'noduv-gris-claro': '#D8D8D8',
+                        'noduv-fondo': '#F4F6F8',
+                    },
+                    // Fuentes de NoduV
+                    fontFamily: {
+                        'hammersmith': ['"Hammersmith One"', 'sans-serif'],
+                        'inter': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-noduv-fondo text-noduv-texto">
+
+    <!-- 
+      BARRA DE NAVEGACIÓN SUPERIOR
+    -->
+    <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
+        <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <!-- Botón de Volver al Dashboard -->
+                <a href="dashboard.html#cursos" class="p-2 text-noduv-azul" aria-label="Volver al Dashboard">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </a>
+                
+                <!-- Logo NoduV -->
+                <a href="dashboard.html" class="font-hammersmith text-2xl font-bold flex items-center text-noduv-azul">
+                    <span class="text-noduv-exito text-3xl mr-1 transform -rotate-10">✓</span>
+                    NoduV
+                </a>
+            </div>
+            
+            <!-- Navegación Desktop -->
+            <nav id="desktop-nav" class="hidden md:flex items-center space-x-6">
+                <a href="dashboard.html#inicio" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Inicio</a>
+                <a href="dashboard.html#cursos" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Cursos</a>
+                <a href="dashboard.html#comunidad" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Comunidad</a>
+                <a href="dashboard.html#rutas" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Rutas de Aprendizaje</a>
+                <a href="dashboard.html#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Mi Perfil</a>
+            </nav>
+
+            <!-- Botones (Desktop y Móvil) -->
+            <div class="flex items-center">
+                <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+                <button id="mobile-menu-button-dash" class="md:hidden text-noduv-azul ml-4" aria-label="Abrir menú">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
+             <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
+            <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
+            <a href="dashboard.html#comunidad" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Comunidad</a>
+            <a href="dashboard.html#rutas" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Rutas de Aprendizaje</a>
+            <a href="dashboard.html#perfil" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Mi Perfil</a>
+            <div class="p-4">
+                <button id="open-upload-button-mobile" class="w-full bg-noduv-celeste text-white font-inter font-medium py-3 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+      CONTENEDOR PRINCIPAL
+    -->
+    <main class="container mx-auto px-4 md:px-8 py-10">
+        
+        <!-- Sección de Apuntes de Matemáticas -->
+        <section id="mate">
+
+            <!-- Vista 1: Resumen (Mostrada por defecto) -->
+            <div id="mate-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
+                <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Volver a Cursos
+                </a>
+                <h1 class="text-4xl md:text-5xl font-bold text-noduv-azul mb-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h3m-3-10h.01M9 17h.01M12 17h.01M15 17h.01M9 13h.01M12 13h.01M15 13h.01M9 10h.01M12 10h.01M15 10h.01M3 7h18a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V9a2 2 0 012-2z"/></svg>
+                    Matemáticas
+                </h1>
+                <p class="text-lg text-noduv-gris-medio">Apuntes sobre Cálculo, Discreta y Estadística. Aquí encontrarás ejemplos resueltos y las fórmulas que entiendo xd</p>
+                <div class="mt-4">
+                    <button class="bg-noduv-gris-claro text-noduv-gris-medio font-semibold py-2 px-6 rounded-lg transition-colors cursor-not-allowed" disabled>
+                        Apuntes del curso (Próximamente)
+                    </button>
+                </div>
+                <div class="mt-6 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto">Temas Clave:</h3>
+                    <ul class="list-disc list-inside mt-2 text-noduv-gris-medio space-y-1">
+                        <li>Derivadas e Integrales</li>
+                        <li>Matrices y Determinantes</li>
+                        <li>Probabilidad Condicional</li>
+                    </ul>
+                </div>
+                <div class="mt-8 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto mb-3">Tareas Pendientes ✅</h3>
+                    <form id="todo-form" class="flex gap-2 mb-4">
+                        <input type="text" id="todo-input" placeholder="Añadir nueva tarea..." class="flex-grow bg-noduv-fondo border border-noduv-gris-claro rounded-lg px-3 py-2 focus:ring-2 focus:ring-noduv-celeste focus:border-transparent outline-none transition-all">
+                        <button type="submit" class="bg-noduv-celeste hover:bg-noduv-azul text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Añadir
+                        </button>
+                    </form>
+                    <div id="todo-list" class="space-y-3">
+                        <!-- Tareas se renderizan aquí -->
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- 
+      Footer (Consistente en todas las páginas)
+    -->
+    <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
+        <div class="container mx-auto">
+            <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 
+      Enlace al archivo JavaScript
+    -->
+    <script src="scripts/curso_mate.js" defer></script>
+
+</body>
+</html>

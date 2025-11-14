@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuntes de IHC - NoduV</title>
+    
+    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ¡NUEVO! Scripts de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F6F8; /* noduv-fondo */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* Ocultar vistas de apuntes por defecto */
+        .note-view {
+            display: none;
+        }
+        
+        /* Mostrar la vista activa */
+        .note-view.active {
+            display: block;
+        }
+        
+        /* Estilos para Tareas */
+        .task-item span.completed {
+            @apply line-through text-noduv-gris-medio;
+        }
+        
+        /* ¡NUEVO! Estilo para el botón de marcador */
+        .bookmark-btn.saved {
+            fill: #4A90E2; /* noduv-celeste */
+            color: #4A90E2;
+        }
+
+    </style>
+    
+    <script>
+        // Configuración personalizada de Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Paleta de colores de NoduV
+                    colors: {
+                        'noduv-azul': '#1C3D5A',
+                        'noduv-celeste': '#4A90E2',
+                        'noduv-exito': '#7ED321',
+                        'noduv-alerta': '#F5A623',
+                        'noduv-error': '#D0021B',
+                        'noduv-texto': '#333333',
+                        'noduv-gris-medio': '#888888',
+                        'noduv-gris-claro': '#D8D8D8',
+                        'noduv-fondo': '#F4F6F8',
+                    },
+                    // Fuentes de NoduV
+                    fontFamily: {
+                        'hammersmith': ['"Hammersmith One"', 'sans-serif'],
+                        'inter': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-noduv-fondo text-noduv-texto">
+
+    <!-- 
+      BARRA DE NAVEGACIÓN SUPERIOR
+    -->
+    <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
+        <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
+            
+            <div class="flex items-center gap-3">
+                <!-- Botón de Volver al Dashboard -->
+                <a href="dashboard.html#cursos" class="p-2 text-noduv-azul" aria-label="Volver al Dashboard">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </a>
+                
+                <!-- Logo NoduV -->
+                <a href="dashboard.html" class="font-hammersmith text-2xl font-bold flex items-center text-noduv-azul">
+                    <span class="text-noduv-exito text-3xl mr-1 transform -rotate-10">✓</span>
+                    NoduV
+                </a>
+            </div>
+            
+            <!-- Navegación Desktop -->
+            <nav id="desktop-nav" class="hidden md:flex items-center space-x-6">
+                <a href="dashboard.html#inicio" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Inicio</a>
+                <a href="dashboard.html#cursos" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Cursos</a>
+                <a href="dashboard.html#comunidad" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Comunidad</a>
+                <a href="dashboard.html#rutas" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Rutas de Aprendizaje</a>
+                <a href="dashboard.html#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Mi Perfil</a>
+            </nav>
+
+            <!-- Botones (Desktop y Móvil) -->
+            <div class="flex items-center">
+                <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+                <button id="mobile-menu-button-dash" class="md:hidden text-noduv-azul ml-4" aria-label="Abrir menú">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
+             <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
+            <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
+            <a href="dashboard.html#comunidad" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Comunidad</a>
+            <a href="dashboard.html#rutas" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Rutas de Aprendizaje</a>
+            <a href="dashboard.html#perfil" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Mi Perfil</a>
+            <div class="p-4">
+                <button id="open-upload-button-mobile" class="w-full bg-noduv-celeste text-white font-inter font-medium py-3 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
+                    Subir Apunte
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 
+      CONTENEDOR PRINCIPAL
+    -->
+    <main class="container mx-auto px-4 md:px-8 py-10">
+        
+        <!-- Sección de Apuntes de IHC -->
+        <section id="ihc">
+
+            <!-- Vista 1: Resumen (Mostrada por defecto) -->
+            <div id="ihc-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
+                <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Volver a Cursos
+                </a>
+                <h1 class="text-4xl md:text-5xl font-bold text-noduv-azul mb-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
+                    Interacción Humano-Computadora (IHC)
+                </h1>
+                <p class="text-lg text-noduv-gris-medio">Apuntes sobre usabilidad, experiencia de usuario (UX) y diseño de interfaces (UI). Heurísticas, patrones de diseño y metodologías de evaluación.</p>
+                <div class="mt-4">
+                    <button id="show-ihc-notes-btn" class="bg-noduv-celeste text-white font-semibold py-2 px-6 rounded-lg hover:bg-noduv-azul transition-colors">
+                        Ver Apuntes del curso
+                    </button>
+                </div>
+                <div class="mt-6 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto">Conceptos Esenciales:</h3>
+                    <ul class="list-disc list-inside mt-2 text-noduv-gris-medio space-y-1">
+                        <li>Las 10 Heurísticas de Nielsen</li>
+                        <li>Diseño Centrado en el Usuario</li>
+                        <li>Pruebas de Usabilidad y Prototipado</li>
+                    </ul>
+                </div>
+                <div class="mt-8 border-t border-noduv-fondo pt-6">
+                    <h3 class="text-xl font-semibold text-noduv-texto mb-3">Tareas Pendientes ✅</h3>
+                    <form id="todo-form" class="flex gap-2 mb-4">
+                        <input type="text" id="todo-input" placeholder="Añadir nueva tarea..." class="flex-grow bg-noduv-fondo border border-noduv-gris-claro rounded-lg px-3 py-2 focus:ring-2 focus:ring-noduv-celeste focus:border-transparent outline-none transition-all">
+                        <button type="submit" class="bg-noduv-celeste hover:bg-noduv-azul text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+                            Añadir
+                        </button>
+                    </form>
+                    <div id="todo-list" class="space-y-3">
+                        <!-- Tareas se renderizan aquí -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vista 2: Índice de Apuntes (Oculta) -->
+            <div id="ihc-notes" class="note-view">
+                <header class="text-center mb-8 relative">
+                    <button id="back-to-ihc-summary-btn" class="absolute top-1/2 -translate-y-1/2 left-0 p-2 rounded-full text-noduv-gris-medio hover:bg-noduv-fondo" title="Volver">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h1 class="text-3xl font-bold text-noduv-azul">Índice de Temas de IHC</h1>
+                    <p class="text-noduv-gris-medio mt-2">Apuntes del curso de Interacción Humano-Computadora.</p>
+                </header>
+                <main>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Tarjeta de Apunte 1: Heurísticas -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-heuristics-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Heurísticas de Usabilidad (Parte 1)</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="ihc-heuristics" 
+                                        data-title="Heurísticas de Usabilidad (Parte 1)" 
+                                        data-desc="Las 10 heurísticas de Nielsen y principios clave de UI/AI." 
+                                        data-url="curso_ihc.html#ihc-topic-heuristics"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Las 10 heurísticas de Nielsen y otros principios clave de UI y Arquitectura de la Información.</p>
+                        </div>
+
+                        <!-- Tarjeta de Apunte 2: Wireframes -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-wireframes-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Wireframes y Prototipos (Parte 2)</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="ihc-wireframes" 
+                                        data-title="Wireframes y Prototipos (Parte 2)" 
+                                        data-desc="Del boceto al producto: El proceso de ideación." 
+                                        data-url="curso_ihc.html#ihc-topic-wireframes"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Del boceto al producto: El proceso de ideación y creación de interfaces.</p>
+                        </div>
+                        
+                        <!-- Tarjeta de Apunte 3: Web Design -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-webdesign-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Diseño Web y Patrones</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="ihc-webdesign" 
+                                        data-title="Diseño Web y Patrones" 
+                                        data-desc="Principios de diseño responsivo, tipografía y patrones." 
+                                        data-url="curso_ihc.html#ihc-topic-webdesign"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Principios de diseño responsivo, tipografía, imágenes y patrones de interfaz.</p>
+                        </div>
+
+                        <!-- Tarjeta de Apunte 4: Mobile UI -->
+                        <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
+                            <div class="flex justify-between items-start">
+                                <a href="#" id="show-mobileui-notes-btn" class="flex-grow">
+                                    <h2 class="text-xl font-bold text-noduv-celeste mb-2 hover:underline">Diseño UI Móvil</h2>
+                                </a>
+                                <button class="bookmark-btn flex-shrink-0 p-1 text-noduv-gris-claro hover:text-noduv-celeste" 
+                                        data-id="ihc-mobileui" 
+                                        data-title="Diseño UI Móvil" 
+                                        data-desc="Principios y patrones para la creación de interfaces móviles." 
+                                        data-url="curso_ihc.html#ihc-topic-mobileui"
+                                        title="Guardar en Mi Biblioteca">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                                </button>
+                            </div>
+                            <p class="text-noduv-gris-medio">Principios y patrones para la creación de interfaces móviles efectivas.</p>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 border-2 border-dashed border-noduv-gris-claro flex items-center justify-center">
+                            <p class="text-noduv-gris-medio text-center">Próximamente más apuntes...</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Vistas de Detalle de Temas (Ocultas) -->
+            
+            <!-- View 3: IHC Topic Detail (Heuristics) -->
+            <div id="ihc-topic-heuristics" class="note-view">
+                <header class="mb-8 relative">
+                    <button id="back-to-ihc-index-btn" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Principios de Heurística (Parte 1)</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="ihc-heuristics" 
+                                data-title="Heurísticas de Usabilidad (Parte 1)" 
+                                data-desc="Las 10 heurísticas de Nielsen y principios clave de UI/AI." 
+                                data-url="curso_ihc.html#ihc-topic-heuristics"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="bg-white border border-noduv-gris-claro rounded-lg p-6">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Conceptos Fundamentales</h2>
+                        <ul class="list-disc list-inside space-y-3">
+                            <li><strong class="text-noduv-texto">UX (User Experience):</strong> Abarca la experiencia completa que un usuario tiene al interactuar con un producto o servicio.</li>
+                            <li><strong class="text-noduv-texto">UI (User Interface):</strong> Es el punto de interacción entre el usuario y la máquina, enfocándose en los elementos visuales.</li>
+                            <li><strong class="text-noduv-texto">AI (Information Architecture):</strong> La práctica de organizar y estructurar el contenido de una aplicación o sitio web.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">¿Qué es una Heurística?</h2>
+                        <p>Una heurística es una regla o un conjunto de directrices generales que nos ayudan a diseñar y evaluar la usabilidad de una interfaz. No son leyes estrictas, sino principios que guían la creación de productos más intuitivos y fáciles de usar, basándose en el comportamiento humano.</p>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-3xl font-bold text-noduv-azul">Las 10 Heurísticas de Usabilidad de Jakob Nielsen</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">1. Visibilidad del estado del sistema</h3><p>El sistema siempre debe mantener informado al usuario sobre lo que está ocurriendo a través de una retroalimentación adecuada y oportuna.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">2. Relación sistema y mundo real</h3><p>El diseño debe hablar el lenguaje del usuario, usando palabras, frases y conceptos familiares en lugar de jerga técnica.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">3. Control y libertad del usuario</h3><p>Los usuarios deben tener una "salida de emergencia" claramente marcada para abandonar un estado no deseado, como un botón de "Cancelar".</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">4. Consistencia y estándares</h3><p>Las interfaces deben ser consistentes. Si un ícono significa algo en una sección, debe significar lo mismo en todas las demás.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">5. Prevención de errores</h3><p>Es mejor evitar que los errores ocurran en primer lugar. Esto se puede lograr con un diseño cuidadoso y validaciones.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">6. Reconocer antes que recordar</h3><p>Haz que las acciones y opciones sean visibles para minimizar la carga de memoria del usuario. Es más fácil reconocer que recordar.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">7. Flexibilidad y eficiencia</h3><p>El sistema debe ser eficiente para usuarios de todos los niveles, permitiendo atajos para los más avanzados.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">8. Diseño estético y minimalista</h3><p>Las interfaces no deben contener información irrelevante. Un diseño limpio facilita la interacción.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">9. Ayudar a recuperarse de errores</h3><p>Los mensajes de error deben ser claros, en lenguaje simple y, lo más importante, deben sugerir una solución.</p></div>
+                        <div class="bg-white rounded-lg p-6 shadow-md"><h3 class="font-semibold text-lg mb-2">10. Ayuda y documentación</h3><p>La ayuda debe ser fácil de encontrar, enfocada en los pasos del usuario y no ser excesivamente larga.</p></div>
+                    </div>
+                    <div class="text-center mt-8">
+                           <h2 class="text-3xl font-bold text-noduv-azul">Principios Clave para AI y UI</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">Principios de Arquitectura de la Información (AI)</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li><strong>Divulgación:</strong> Muestra la información suficiente para que el usuario entienda qué encontrará al profundizar, sin abrumarlo.</li>
+                                <li><strong>Puertas de entrada:</strong> Asume que los usuarios no siempre llegan por la página de inicio. El contenido debe ser comprensible desde cualquier punto.</li>
+                                <li><strong>Objetos:</strong> El contenido debe ser tratado como un objeto con un ciclo de vida propio, que puede ser editado y categorizado.</li>
+                                <li><strong>Clasificaciones múltiples:</strong> Permite que la información sea organizada en múltiples categorías para ayudar a diferentes usuarios.</li>
+                                <li><strong>Crecimiento:</strong> El diseño debe ser escalable para acomodar el crecimiento futuro del contenido.</li>
+                            </ul>
+                        </div>
+                         <div class="bg-white rounded-lg p-6 shadow-md">
+                            <h3 class="text-xl font-semibold mb-3">Principios de Diseño de Interfaz (UI) - C.R.A.P.</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li><strong>Contraste:</strong> Diferencia visualmente los elementos para dirigir la atención (con color, tamaño, forma).</li>
+                                <li><strong>Repetición:</strong> Reutiliza patrones de diseño para crear consistencia y familiaridad.</li>
+                                <li><strong>Alineación:</strong> Crea orden y una conexión visual entre elementos para facilitar el escaneo.</li>
+                                <li><strong>Proximidad:</strong> Agrupa los elementos relacionados para reducir el desorden visual.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Resumen de Puntos Clave</h2>
+                        <ul class="list-disc list-inside space-y-2 text-noduv-texto">
+                            <li>Un diseño exitoso integra armoniosamente <strong>UX, UI y AI</strong>.</li>
+                            <li>Las <strong>10 heurísticas de Nielsen</strong> son un marco probado para evaluar y mejorar la usabilidad.</li>
+                            <li>La <strong>Arquitectura de la Información</strong> es crucial para que los usuarios encuentren lo que buscan.</li>
+                            <li>El <strong>Diseño de Interfaz</strong> se enfoca en crear interfaces atractivas y funcionales con principios como C.R.A.P.</li>
+                        </ul>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- View 4: IHC Topic Detail (Wireframes) -->
+            <div id="ihc-topic-wireframes" class="note-view">
+                 <header class="mb-8 relative">
+                    <button id="back-to-ihc-index-btn-wireframes" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Wireframes, Mockups y Prototipos (Parte 2)</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="ihc-wireframes" 
+                                data-title="Wireframes y Prototipos (Parte 2)" 
+                                data-desc="Del boceto al producto: El proceso de ideación." 
+                                data-url="curso_ihc.html#ihc-topic-wireframes"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                    <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Del boceto al producto</h2>
+                        <p class="text-lg text-noduv-texto">Después de definir los principios y elementos clave, el siguiente paso en el diseño de UI es el proceso de ideación y creación. Este camino va desde ideas iniciales de <strong class="text-noduv-texto">baja fidelidad</strong> hasta representaciones interactivas de <strong class="text-noduv-texto">alta fidelidad</strong>.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">1. Wireframes</h2>
+                        <p>Un <strong>wireframe</strong> es una representación visual de la estructura y el contenido de una página web o aplicación. Es el esqueleto del diseño, hecho de líneas y figuras simples.</p>
+                        <ul class="list-disc list-inside space-y-2 mt-4">
+                            <li><strong class="text-noduv-texto">Propósito:</strong> Sirve para presentar una idea, validar un concepto y definir la estructura sin distraerse con el diseño visual.</li>
+                            <li><strong class="text-noduv-texto">Fidelidad:</strong> Es una herramienta de <strong class="text-noduv-texto">baja fidelidad</strong>. Se enfoca en la disposición de los elementos y la arquitectura de la información.</li>
+                            <li><strong class="text-noduv-texto">Componentes:</strong> Contiene cajas, líneas, texto simple y placeholders para imágenes.</li>
+                            <li><strong class="text-noduv-texto">Beneficios:</strong> Es rápido y fácil de crear y modificar. Permite que todos los equipos se alineen en la estructura básica.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">2. Mockups</h2>
+                        <p>Un <strong>mockup</strong> es una representación visual del producto final que se enfoca en el aspecto estético. Toma la estructura del wireframe y le añade los elementos de diseño.</p>
+                        <ul class="list-disc list-inside space-y-2 mt-4">
+                            <li><strong class="text-noduv-texto">Propósito:</strong> Muestra cómo se verá el producto terminado. Es ideal para obtener retroalimentación sobre la dirección visual.</li>
+                            <li><strong class="text-noduv-texto">Fidelidad:</strong> Se considera de <strong class="text-noduv-texto">mediana a alta fidelidad</strong>. Incluye colores, tipografía, íconos y otros elementos visuales.</li>
+                            <li><strong class="text-noduv-texto">Componentes:</strong> A diferencia de los wireframes, los mockups incluyen paletas de color, estilos de texto, y assets visuales finales.</li>
+                            <li><strong class="text-noduv-texto">Beneficios:</strong> Permite tomar decisiones de diseño y ayuda a visualizar la identidad de marca del producto.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">3. Prototipos</h2>
+                        <p>Un <strong>prototipo</strong> es una simulación interactiva del producto final. No solo muestra cómo se ve, sino también cómo se comporta.</p>
+                         <ul class="list-disc list-inside space-y-2 mt-4">
+                            <li><strong class="text-noduv-texto">Propósito:</strong> Permite a los usuarios y stakeholders interactuar con el diseño, probando la navegación y el flujo de la experiencia.</li>
+                            <li><strong class="text-noduv-texto">Fidelidad:</strong> Es una herramienta de <strong class="text-noduv-texto">alta fidelidad</strong>. Combina el aspecto visual del mockup con la interactividad.</li>
+                            <li><strong class="text-noduv-texto">Componentes:</strong> Un prototipo tiene botones clicables, transiciones de pantalla, y simula la experiencia del usuario.</li>
+                            <li><strong class="text-noduv-texto">Beneficios:</strong> Sirve para realizar pruebas de usabilidad y obtener retroalimentación invaluable antes del desarrollo.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-white rounded-lg p-6 shadow-md">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">4. User Flows (Flujos de Usuario)</h2>
+                        <p>Un <strong>User Flow</strong> o flujo de usuario es el camino que un usuario toma en una aplicación para completar una meta o una tarea específica.</p>
+                         <ul class="list-disc list-inside space-y-2 mt-4">
+                            <li><strong class="text-noduv-texto">Propósito:</strong> Ayuda a los diseñadores a entender la lógica de la interacción y a identificar posibles puntos de fricción.</li>
+                            <li><strong class="text-noduv-texto">Beneficios:</strong> Permite visualizar los diferentes escenarios y asegurar que el diseño guíe al usuario de manera eficiente.</li>
+                        </ul>
+                    </div>
+                     <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
+                        <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Resumen de Puntos Clave</h2>
+                         <ul class="list-disc list-inside space-y-3 text-noduv-texto">
+                            <li>El proceso de diseño de UI es un viaje de <strong>baja a alta fidelidad</strong>.</li>
+                            <li>Los <strong>Wireframes</strong> son el esqueleto; representan la estructura.</li>
+                            <li>Los <strong>Mockups</strong> son la piel; representan la apariencia visual.</li>
+                            <li>Los <strong>Prototipos</strong> son el cuerpo completo; representan la interactividad.</li>
+                            <li>Los <strong>User Flows</strong> son el mapa que guía al usuario a través del producto.</li>
+                        </ul>
+                    </div>
+                </main>
+            </div>
+            
+            <!-- View 5: IHC Topic Detail (Web Design) -->
+            <div id="ihc-topic-webdesign" class="note-view">
+                 <header class="mb-8 relative">
+                    <button id="back-to-ihc-index-btn-webdesign" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Web Design & Patterns</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="ihc-webdesign" 
+                                data-title="Diseño Web y Patrones" 
+                                data-desc="Principios de diseño responsivo, tipografía y patrones." 
+                                data-url="curso_ihc.html#ihc-topic-webdesign"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                </main>
+            </div>
+
+            <!-- View 6: IHC Topic Detail (Mobile UI) -->
+            <div id="ihc-topic-mobileui" class="note-view">
+                 <header class="mb-8 relative">
+                    <button id="back-to-ihc-index-btn-mobileui" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                        Volver al Índice
+                    </button>
+                    <div class="flex justify-center items-center gap-4">
+                        <h1 class="text-3xl font-bold text-noduv-azul text-center mt-6">Diseño y Patrones para Interfaces Móviles</h1>
+                        <button class="bookmark-btn text-noduv-gris-claro hover:text-noduv-celeste mt-6" 
+                                data-id="ihc-mobileui" 
+                                data-title="Diseño UI Móvil" 
+                                data-desc="Principios y patrones para la creación de interfaces móviles." 
+                                data-url="curso_ihc.html#ihc-topic-mobileui"
+                                title="Guardar en Mi Biblioteca">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                    </div>
+                </header>
+                <main class="space-y-8">
+                    <!-- ... (contenido de apuntes sin cambiar) ... -->
+                </main>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      Footer (Consistente en todas las páginas)
+    -->
+    <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
+        <div class="container mx-auto">
+            <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 
+      Enlace al archivo JavaScript
+    -->
+    <script src="scripts/curso_ihc.js" defer></script>
+
+</body>
+</html>

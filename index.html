@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoduV - Centraliza, Colabora, Aprende</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevenir scroll horizontal */
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+
+        /* Definimos las clases de fuentes para Tailwind */
+        .font-hammersmith {
+            font-family: 'Hammersmith One', sans-serif;
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Logo simple basado en el mock-up (Añadido por ti) */
+        .noduv-logo {
+            font-family: 'Hammersmith One', sans-serif;
+            font-size: 1.75rem; /* 28px */
+            line-height: 2rem; /* 32px */
+            color: #1C3D5A; /* Azul NoduV */
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+        }
+        .noduv-logo-check {
+            color: #7ED321; /* Verde Éxito */
+            font-size: 2rem;
+            margin-right: 0.25rem;
+            transform: rotate(-10deg);
+        }
+
+        .form-input {
+            @apply w-full px-4 py-3 border border-transparent rounded-xl; 
+            @apply bg-noduv-input-dark text-white; 
+            @apply placeholder-noduv-gris-medio transition-colors duration-200;
+            @apply focus:outline-none focus:border-noduv-gris-medio;
+        }
+        .form-input-error {
+            @apply border-noduv-error;
+            @apply focus:border-noduv-error;
+        }
+        
+        .role-selector input:checked + label {
+            @apply bg-noduv-celeste border-noduv-celeste text-white;
+        }
+        .role-selector label {
+            @apply block w-full text-left p-4 border border-noduv-gris-claro rounded-lg cursor-pointer transition-colors;
+            @apply hover:bg-noduv-azul hover:border-noduv-celeste;
+        }
+        .role-selector label span {
+            @apply text-sm text-noduv-gris-claro;
+        }
+        .role-selector input:checked + label span {
+            @apply text-white;
+        }
+        
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'noduv-azul': '#1C3D5A',
+                        'noduv-celeste': '#4A90E2',
+                        'noduv-exito': '#7ED321',
+                        'noduv-alerta': '#F5A623',
+                        'noduv-error': '#D0021B',
+                        'noduv-texto': '#333333',
+                        'noduv-gris-medio': '#888888',
+                        'noduv-gris-claro': '#D8D8D8',
+                        'noduv-fondo': '#F4F6F8',
+                        'noduv-hero-bg': '#DA7E58', 
+                        'noduv-input-dark': '#2F3B4E', 
+                    },
+                    fontFamily: {
+                        'hammersmith': ['"Hammersmith One"', 'sans-serif'],
+                        'inter': ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-noduv-fondo text-noduv-texto">
+
+    <!-- 
+      ENCABEZADO (HEADER)
+    -->
+      <header id="main-nav" class="bg-noduv-azul text-white p-4 md:p-6 flex justify-between items-center sticky top-0 z-50 shadow-md">
+        
+        <!-- Logo -->
+         <a href="#home" class="font-hammersmith text-2xl font-bold flex items-center">
+            <span class="text-noduv-exito text-3xl mr-1 transform -rotate-10">✓</span>
+            NoduV
+        </a>
+        
+        <!-- Navegación -->
+         <div>
+            <!-- Menú para Desktop -->
+             <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="font-inter text-white text-lg font-medium hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-white rounded-md">Home</a>
+                <a href="#nosotros" class="font-inter text-white text-lg font-medium hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-white rounded-md">Nosotros</a>
+                <a href="#planes" class="font-inter text-white text-lg font-medium hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-white rounded-md">Planes</a>
+                
+                <a href="#" id="open-login-button" class="ml-4 flex items-center bg-white text-noduv-texto font-inter font-medium py-2 px-5 rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:ring-offset-2 focus:ring-offset-noduv-azul">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zM12 4a8 8 0 100 16 8 8 0 000-16z"></path>
+                    </svg>
+                    <span class="text-sm">Iniciar sesión</span>
+                </a>
+            </div>
+            
+            <!-- Botón de Menú Móvil (Hamburger) --><button id="mobile-menu-button" class="md:hidden text-white" aria-label="Abrir menú">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-4 6h16"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- 
+      Menú Móvil (Dropdown)
+    --><div id="mobile-menu" class="hidden md:hidden sticky top-[68px] z-40 w-full bg-noduv-azul bg-opacity-95 shadow-lg">
+        <a href="#home" class="block text-center text-white text-lg py-4 hover:bg-black/10">Home</a>
+        <a href="#nosotros" class="block text-center text-white text-lg py-4 hover:bg-black/10">Nosotros</a>
+        <a href="#planes" class="block text-center text-white text-lg py-4 hover:bg-black/10">Planes</a>
+        <a href="#" id="open-login-button-mobile" class="block text-center text-noduv-texto text-lg py-4 bg-white hover:bg-gray-100">Iniciar sesión</a>
+    </div>
+
+    <!-- 
+      Contenedor Principal
+    --><main>
+        
+        <section id="home" class="bg-white pt-20 pb-16 md:pt-32 md:pb-24 px-8 md:px-16 lg:px-24">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                
+                <!-- Columna de Texto --><div class="order-2 md:order-1">
+                    <h1 class="font-hammersmith text-4xl md:text-5xl lg:text-6xl text-noduv-azul mb-6 leading-tight">
+                        Centraliza Tu Conocimiento, Colabora, Aprende Mejor
+                    </h1>
+                    
+                    <p class="font-inter text-lg text-noduv-gris-medio mb-10">
+                        NoduV es la plataforma creada por y para estudiantes que valida y comparte apuntes de alta calidad, ayudándote a estudiar con confianza.
+                    </p>
+
+                    <a href="#" classs="block" id="open-register-button">
+                        <button class="font-inter text-xl font-bold bg-noduv-exito text-noduv-azul py-4 px-10 rounded-lg shadow-lg hover:bg-green-600 hover:text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2">
+                            Empieza Ahora
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Columna de Imagen -->
+                 <div class="order-1 md:order-2">
+                    <img src="assets/images/EstudiantesColaborando.png" 
+                         alt="Estudiantes colaborando" 
+                         class="w-auto h-auto rounded-lg shadow-md object-cover">
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 
+          Sección Nosotros 
+        -->
+          <section id="nosotros" class="py-24 px-8 md:px-16 lg:px-24 bg-white relative overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <svg class="w-full h-full" viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <path d="M-363 680.5C-10 609 369.5 352 721.5 490C1073.5 628 1365.5 853.5 1740 760V1200H-363V680.5Z" fill="#4A90E2" fill-opacity="0.1"/>
+                </svg>
+            </div>
+            
+            <div class="container mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <h2 class="font-hammersmith text-3xl md:text-4xl text-noduv-azul mb-4">Nosotros</h2>
+                    <p class="font-inter text-lg text-noduv-gris-medio max-w-2xl mx-auto">Impulsamos La Excelencia Académica Colaborativa</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                    <div class="flex justify-center">
+                        <img src="assets/images/logonoduvnn.png"
+                             alt="Equipo NoduV"
+                             class="w-48 h-48 rounded-lg shadow-xl object-cover">
+                    </div>
+                    <div class="text-left">
+                        <p class="font-inter text-xl text-noduv-texto leading-relaxed">
+                            NoduV es la plataforma creada por y para estudiantes que valida y comparte apuntes de alta calidad, ayudándote a estudiar con confianza.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Misión, Visión, Valores  -->
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                    
+                    <div class="flex flex-col items-center">
+                        <img src="assets/images/Mision.png" alt="Misión" class="mb-4 rounded-full w-32 h-32 object-cover border-4 border-noduv-gris-claro">
+                        <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">Misión</h3>
+                        <p class="font-inter text-noduv-gris-medio text-sm">
+                            Centralizar y validar el conocimiento académico de estudiantes de alto rendimiento para ofrecer un recurso de estudio confiable y colaborativo que potencie el aprendizaje de toda la comunidad estudiantil.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <img src="assets/images/Vision.png" alt="Visión" class="mb-4 rounded-full w-32 h-32 object-cover border-4 border-noduv-gris-claro">
+                        <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">Visión</h3>
+                        <p class="font-inter text-noduv-gris-medio text-sm">
+                            Convertirnos en la plataforma digital de referencia para la excelencia académica colaborativa, transformando la manera en que los estudiantes comparten y consumen conocimiento.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <img src="assets/images/Valores.png" alt="Valores" class="mb-4 rounded-full w-32 h-32 object-cover border-4 border-noduv-gris-claro">
+                        <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">Valores</h3>
+                        <p class="font-inter text-noduv-gris-medio text-sm">
+                            Confianza, Excelencia, Colaboración e Integridad.
+                        </p>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- 
+          Sección Planes 
+        -->
+          <section id="planes" class="py-24 px-8 md:px-16 lg:px-24 bg-noduv-fondo">
+            <div class="container mx-auto">
+                
+                <div class="text-center mb-16">
+                    <h2 class="font-hammersmith text-3xl md:text-4xl text-noduv-azul mb-4">Planes</h2>
+                    <p class="font-inter text-lg text-noduv-gris-medio max-w-3xl mx-auto">
+                        Cada estudiante cumple un papel importante en la comunidad. Ya sea compartiendo tus apuntes, aprendiendo de los mejores o validando contenido, NoduV te conecta con una red colaborativa donde todos crecen.
+                    </p>
+                </div>
+
+                <!-- Botones Mensual / Anual -->
+                 <div class="flex justify-center space-x-4 mb-16">
+                    <button id="open-monthly-plan" class="font-inter text-lg font-semibold bg-noduv-celeste text-white py-3 px-10 rounded-lg shadow-md hover:bg-noduv-azul transition-colors focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:ring-offset-2">
+                        Mensual
+                    </button>
+                    <button id="open-annual-plan" class="font-inter text-lg font-semibold bg-white text-noduv-celeste border-2 border-noduv-celeste py-3 px-10 rounded-lg hover:bg-noduv-celeste hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:ring-offset-2">
+                        Anual
+                    </button>
+                </div>
+                
+                <!-- Grid de Roles -->
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-8 flex flex-col items-center text-center overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="assets/images/creadorContenido.png" alt="Creador de Contenido" class="w-full h-48 object-cover rounded-md mb-6" onerror="this.src='https://placehold.co/400x250/D8D8D8/333333?text=Creador'; this.onerror=null;">
+                        <h3 class="font-inter text-2xl font-bold text-noduv-azul mb-4">Creador de Contenido</h3>
+                        <ul class="font-inter text-noduv-gris-medio list-disc list-inside text-left space-y-2 text-base">
+                            <li>Comparte tus apuntes, guías y evaluaciones resueltas.</li>
+                            <li>Gana reconocimiento académico y ayuda a otros estudiantes.</li>
+                            <li>Obtén insignias, reputación y sé parte de la comunidad de excelencia.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-8 flex flex-col items-center text-center overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="assets/images/consumidorContenido.png" alt="Consumidor de Contenido" class="w-full h-48 object-cover rounded-md mb-6" onerror="this.src='https://placehold.co/400x250/D8D8D8/333333?text=Consumidor'; this.onerror=null;">
+                        <h3 class="font-inter text-2xl font-bold text-noduv-azul mb-4">Consumidor de Contenido</h3>
+                        <ul class="font-inter text-noduv-gris-medio list-disc list-inside text-left space-y-2 text-base">
+                            <li>Encuentra apuntes verificados, explicaciones claras y exámenes resueltos.</li>
+                            <li>Ahorra tiempo, estudia con confianza y mejora tu rendimiento académico.</li>
+                            <li>Califica, comenta y guarda tus materiales favoritos.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-xl p-8 flex flex-col items-center text-center overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
+                        <img src="assets/images/supervisorContenido.png" alt="Supervisor" class="w-full h-48 object-cover rounded-md mb-6" onerror="this.src='https://placehold.co/400x250/D8D8D8/333333?text=Supervisor'; this.onerror=null;">
+                        <h3 class="font-inter text-2xl font-bold text-noduv-azul mb-4">Supervisor</h3>
+                        <ul class="font-inter text-noduv-gris-medio list-disc list-inside text-left space-y-2 text-base">
+                            <li>Garantiza la calidad del contenido compartido en NoduV.</li>
+                            <li>Revisa, aprueba y potencia la credibilidad de la comunidad.</li>
+                            <li>Contribuye a mantener altos estándares de excelencia académica.</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- 
+          Sección de Testimonios
+        -->
+        <section id="testimonials" class="py-24 px-8 md:px-16 lg:px-24 bg-noduv-azul text-white">
+            <div class="container mx-auto max-w-3xl text-center">
+                <img src="assets/images/portavoz.png" alt="Estudiante NoduV" class="w-24 h-24 rounded-full mx-auto mb-6 border-4 border-noduv-celeste">
+                <blockquote class="font-hammersmith text-3xl md:text-4xl leading-tight mb-6">
+                    "Tenía miedo de los parciales por no saber si estudiaba con el material correcto. Con NoduV, encontré apuntes de mi propio delegado y por fin me siento seguro antes de un examen."
+                </blockquote>
+                <p class="font-inter text-xl font-bold">Carlos S.</p>
+                <p class="font-inter text-md text-noduv-gris-claro opacity-80">Estudiante de 3er Ciclo, Ingeniería de Software</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 
+      Footer Mejorado
+    -->
+      <footer class="bg-noduv-azul text-white">
+        <div class="container mx-auto px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                
+                <!-- Columna 1: Logo y Descripción -->
+                <div>
+                    <a href="#home" class="font-hammersmith text-3xl font-bold flex items-center mb-4">
+                        <span class="text-noduv-exito text-4xl mr-1 transform -rotate-10">✓</span>
+                        NoduV
+                    </a>
+                    <p class="font-inter text-noduv-gris-claro opacity-80 max-w-xs">
+                        Una plataforma creada por y para estudiantes, dedicada a centralizar y validar el conocimiento académico.
+                    </p>
+                </div>
+
+                <!-- Columna 2: Enlaces Rápidos -->
+                <div>
+                    <h4 class="font-hammersmith text-xl mb-4">Enlaces</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#nosotros" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Nosotros</a></li>
+                        <li><a href="#planes" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Planes</a></li>
+                        <li><a href="#" id="open-register-button-footer" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Crear Cuenta</a></li>
+                        <li><a href="#" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Privacidad</a></li>
+                        <li><a href="#" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Términos</a></li>
+                        <li><a href="#" class="text-noduv-gris-claro opacity-80 hover:opacity-100 hover:text-white transition-colors">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 3: Redes Sociales -->
+                <div>
+                    <h4 class="font-hammersmith text-xl mb-4">Síguenos en</h4>
+                    <div class="flex space-x-4">
+                        <!-- Facebook -->
+                        <a href="https://www.facebook.com/profile.php?id=61583865505173" target="_blank" rel="noopener noreferrer" class="bg-white/10 p-3 rounded-full text-white hover:bg-white/20 transition-colors" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/noduv_i/" target="_blank" rel="noopener noreferrer" class="bg-white/10 p-3 rounded-full text-white hover:bg-white/20 transition-colors" aria-label="Instagram">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <!-- X (Twitter) -->
+                        <a href="https://x.com/NoduV_I" target="_blank" rel="noopener noreferrer" class="bg-white/10 p-3 rounded-full text-white hover:bg-white/20 transition-colors" aria-label="X (Twitter)">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Copyright en la parte inferior -->
+            <div class="border-t border-white/10 mt-12 pt-8 text-center">
+                <p class="font-inter text-sm text-noduv-gris-claro opacity-70">&copy; 2025 NoduV. Todos los derechos reservados. Creado con base en el proyecto de IHC - UPC</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 
+      MODALES
+    -->
+    
+    <!-- Modal de Iniciar Sesión --><div id="login-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-noduv-azul p-8 rounded-2xl shadow-2xl w-full max-w-sm">
+            <div class="flex justify-end">
+                <button id="close-login-modal" class="text-noduv-gris-medio hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-center text-white mb-6 font-hammersmith">Iniciar Sesión</h2>
+            
+            <form id="login-form"> 
+                <div class="mb-4">
+                    <label for="login-email" class="block text-sm font-medium text-noduv-gris-claro mb-2">Correo Electrónico</label>
+                    <input type="email" id="login-email" class="form-input" placeholder="tu@correo.com" required>
+                </div>
+                <div class="mb-6">
+                    <label for="login-password" class="block text-sm font-medium text-noduv-gris-claro mb-2">Contraseña</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                </div>
+                 <!-- Mensaje de Error -->
+                <p id="login-error" class="text-noduv-error text-sm text-center mb-4 hidden"></p>
+                
+                <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105">
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <a href="#" id="open-password-link" class="text-sm text-noduv-exito hover:underline">¿Olvidaste tu contraseña?</a>
+            </div>
+            <div class="text-center mt-2">
+                <a href="#" id="open-register-link" class="text-sm text-noduv-gris-medio hover:underline">¿No tienes cuenta? <span class="font-semibold text-noduv-exito">Crear una cuenta nueva</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Crear Cuenta --><div id="register-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-noduv-azul p-8 rounded-2xl shadow-2xl w-full max-w-sm">
+            <div class="flex justify-end">
+                <button id="close-register-modal" class="text-noduv-gris-medio hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-center text-white mb-6 font-hammersmith">Crear Cuenta</h2>
+            
+            <form id="register-form" class="space-y-4">
+                <div>
+                    <label for="reg-nombre" class="block text-sm font-medium text-noduv-gris-claro mb-2">Nombre</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Tu nombre completo" required>
+                </div>
+                <div>
+                    <label for="reg-email" class="block text-sm font-medium text-noduv-gris-claro mb-2">Correo Electrónico</label>
+                    <input type="email" id="reg-email" class="form-input" placeholder="tu@correo.com" required>
+                </div>
+                <div>
+                    <label for="reg-password" class="block text-sm font-medium text-noduv-gris-claro mb-2">Contraseña</label>
+                    <input type="password" id="reg-password" class="form-input" placeholder="••••••••" required>
+                </div>
+                
+                <div class="role-selector text-white pt-2 space-y-3">
+                    <label class="block text-sm font-medium text-noduv-gris-claro mb-2">¿Cuál es tu rol principal?</label>
+                    <fieldset class="space-y-3">
+                        <input type="radio" name="role" id="role-consumidor" value="consumidor" class="hidden" checked>
+                        <label for="role-consumidor">
+                            <h4 class="font-semibold">Consumidor</h4>
+                            <span>Busco apuntes y material de estudio.</span>
+                        </label>
+
+                        <input type="radio" name="role" id="role-creador" value="creador" class="hidden">
+                        <label for="role-creador">
+                            <h4 class="font-semibold">Creador de Contenido</h4>
+                            <span>Quiero compartir mis apuntes y ayudar.</span>
+                        </label>
+                        
+                        <input type="radio" name="role" id="role-supervisor" value="supervisor" class="hidden">
+                        <label for="role-supervisor">
+                            <h4 class="font-semibold">Supervisor</h4>
+                            <span>Soy docente (requiere validación).</span>
+                        </label>
+                    </fieldset>
+                </div>
+
+                <!-- Mensaje de Error -->
+                <p id="register-error" class="text-noduv-error text-sm text-center mb-4 hidden"></p>
+                
+                <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105 !mt-6">
+                    Crear Cuenta
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <a href="#" id="open-login-link" class="text-sm text-noduv-gris-medio hover:underline">¿Ya tienes cuenta? <span class="font-semibold text-noduv-exito">Iniciar Sesión</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Recuperar Contraseña -->
+     <div id="password-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-noduv-azul p-8 rounded-2xl shadow-2xl w-full max-w-sm">
+            <div class="flex justify-end">
+                <button id="close-password-modal" class="text-noduv-gris-medio hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-center text-white mb-6 font-hammersmith">Recuperar Contraseña</h2>
+            
+            <form id="password-form" class="space-y-4">
+                <p class="text-noduv-gris-claro text-sm text-center">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</p>
+                <div>
+                    <label for="pass-email" class="block text-sm font-medium text-noduv-gris-claro mb-2">Correo Electrónico</label>
+                    <input type="email" id="pass-email" class="form-input" placeholder="tu@correo.com" required>
+                </div>
+                
+                <!-- Mensaje de Éxito/Error -->
+                <p id="password-message" class="text-noduv-exito text-sm text-center mb-4 hidden"></p>
+
+                <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105 !mt-6">
+                    Enviar Enlace
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <a href="#" id="back-to-login-link" class="text-sm text-noduv-gris-medio hover:underline">Volver a <span class="font-semibold text-noduv-exito">Iniciar Sesión</span></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Plan Mensual -->
+     <div id="monthly-plan-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <button id="close-monthly-plan-modal" class="text-noduv-gris-medio hover:text-noduv-texto transition-colors absolute top-6 right-6">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-3xl font-bold text-center text-noduv-azul mb-6 font-hammersmith">Planes NoduV</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Plan Básico -->
+                <div class="border border-noduv-gris-claro rounded-lg p-6">
+                    <h3 class="font-hammersmith text-2xl text-noduv-texto">Básico</h3>
+                    <p class="font-inter text-4xl font-bold text-noduv-texto my-3">Gratis</p>
+                    <p class="font-inter text-noduv-gris-medio text-sm mb-4">Para el estudiante casual.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>3 Descargas / semana</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>6 Apuntes guardados</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>3 Carpetas</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>Acceso a Comunidad</span></li>
+                    </ul>
+                    <button class="w-full mt-6 bg-noduv-gris-claro text-noduv-gris-medio font-bold py-3 px-5 rounded-lg cursor-default">
+                        Plan Actual
+                    </button>
+                </div>
+                <!-- Plan PRO -->
+                <div class="border-2 border-noduv-celeste rounded-lg p-6 relative">
+                    <span class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-noduv-celeste text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Recomendado</span>
+                    <h3 class="font-hammersmith text-2xl text-noduv-celeste">NoduV+</h3>
+                    <p class="font-inter text-4xl font-bold text-noduv-azul my-3">PEN 9.99<span class="text-lg font-medium text-noduv-gris-medio">/mes</span></p>
+                    <p class="font-inter text-noduv-gris-medio text-sm mb-4">Potencia tu aprendizaje al máximo.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Descargas <span class="font-bold">ilimitadas</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Apuntes guardados <span class="font-bold">ilimitados</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Carpetas <span class="font-bold">ilimitadas</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Acceso a Rutas de Aprendizaje</span></li>
+                    </ul>
+                    <button class="w-full mt-6 bg-noduv-celeste hover:bg-noduv-azul text-white font-bold py-3 px-5 rounded-lg transition-colors">
+                        Actualizar a PRO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Plan Anual -->
+     <div id="annual-plan-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <button id="close-annual-plan-modal" class="text-noduv-gris-medio hover:text-noduv-texto transition-colors absolute top-6 right-6">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-3xl font-bold text-center text-noduv-azul mb-6 font-hammersmith">Planes NoduV</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Plan Básico -->
+                <div class="border border-noduv-gris-claro rounded-lg p-6">
+                    <h3 class="font-hammersmith text-2xl text-noduv-texto">Básico</h3>
+                    <p class="font-inter text-4xl font-bold text-noduv-texto my-3">Gratis</p>
+                    <p class="font-inter text-noduv-gris-medio text-sm mb-4">Para el estudiante casual.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>3 Descargas / semana</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>6 Apuntes guardados</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>3 Carpetas</span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-exito">✓</span> <span>Acceso a Comunidad</span></li>
+                    </ul>
+                    <button class="w-full mt-6 bg-noduv-gris-claro text-noduv-gris-medio font-bold py-3 px-5 rounded-lg cursor-default">
+                        Plan Actual
+                    </button>
+                </div>
+                <!-- Plan PRO (Anual) -->
+                <div class="border-2 border-noduv-celeste rounded-lg p-6 relative">
+                    <span class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-noduv-celeste text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Mejor Oferta</span>
+                    <h3 class="font-hammersmith text-2xl text-noduv-celeste">NoduV+</h3>
+                    <p class="font-inter text-4xl font-bold text-noduv-azul my-3">PEN 5.99<span class="text-lg font-medium text-noduv-gris-medio">/mes</span></p>
+                    <p class="font-inter text-noduv-gris-medio text-sm mb-1"><span class="line-through">Regular: PEN 34.99/mes</span> <span class="font-bold text-noduv-error">¡Ahorra 80%!</span></p>
+                    <p class="font-inter text-noduv-gris-medio text-sm mb-4">(Facturado anualmente)</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Descargas <span class="font-bold">ilimitadas</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Apuntes guardados <span class="font-bold">ilimitados</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Carpetas <span class="font-bold">ilimitadas</span></span></li>
+                        <li class="flex items-center gap-3"><span class="text-noduv-celeste font-bold">✓</span> <span>Acceso a Rutas de Aprendizaje</span></li>
+                    </ul>
+                    <button class="w-full mt-6 bg-noduv-celeste hover:bg-noduv-azul text-white font-bold py-3 px-5 rounded-lg transition-colors">
+                        Actualizar a PRO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="scripts/index.js" defer></script>
+
+</body>
+</html>
