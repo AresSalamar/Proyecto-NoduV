@@ -8,17 +8,13 @@ const firebaseConfig = {
   measurementId: "G-5LGG2BF6QY"
 };
 
-// Variable global para el App ID (para las reglas de seguridad de Firestore)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// ------------------------------------------------------------------
-// INICIALIZACIÓN DE FIREBASE
-// ------------------------------------------------------------------
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null; // Para guardar la info del usuario actual
-let userBibliotecaRef = null; // Referencia a la biblioteca del usuario
+let userBibliotecaRef = null; 
 document.addEventListener('DOMContentLoaded', function () {
             
     // --- Lógica del Menú Móvil del Dashboard ---
@@ -43,15 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (showNotesBtn) {
             showNotesBtn.addEventListener('click', () => {
-                summaryView.classList.remove('active'); // <-- CORREGIDO
-                notesIndexView.classList.add('active'); // <-- CORREGIDO
+                summaryView.classList.remove('active'); 
+                notesIndexView.classList.add('active'); 
             });
         }
 
         if (backToSummaryBtn) {
             backToSummaryBtn.addEventListener('click', () => {
-                notesIndexView.classList.remove('active'); // <-- CORREGIDO
-                summaryView.classList.add('active'); // <-- CORREGIDO
+                notesIndexView.classList.remove('active'); 
+                summaryView.classList.add('active'); 
             });
         }
 
@@ -65,15 +61,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (showTopicBtn) {
                 showTopicBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    notesIndexView.classList.remove('active'); // <-- CORREGIDO
-                    topicView.classList.add('active'); // <-- CORREGIDO
+                    notesIndexView.classList.remove('active'); 
+                    topicView.classList.add('active'); 
                 });
             }
 
             if (backToIndexBtn) {
                 backToIndexBtn.addEventListener('click', () => {
-                    topicView.classList.remove('active'); // <-- CORREGIDO
-                    notesIndexView.classList.add('active'); // <-- CORREGIDO
+                    topicView.classList.remove('active'); 
+                    notesIndexView.classList.add('active');
                 });
             }
         });
@@ -83,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'intro', backBtnId: null }
     ]);
     
-    // --- Lógica de To-Do List (Simplificada para esta página) ---
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
     const todoList = document.getElementById('todo-list');
@@ -161,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Render inicial
     renderTasks();
 
 });

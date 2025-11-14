@@ -9,7 +9,6 @@ const firebaseConfig = {
   measurementId: "G-5LGG2BF6QY"
 };
 
-// Variable global para el App ID (para las reglas de seguridad de Firestore)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -24,11 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Lógica de To-Do List (Simplificada para esta página) ---
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
     const todoList = document.getElementById('todo-list');
-    let tasks = []; // Tareas solo para esta página
+    let tasks = []; 
 
     function renderTasks() {
         if (!todoList) return; // Salir si no hay lista de tareas en esta página
@@ -102,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Render inicial
     renderTasks();
 
 });

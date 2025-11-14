@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apuntes de IHC - NoduV</title>
     
-    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- ¡NUEVO! Scripts de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -20,42 +19,36 @@
         /* Estilos personalizados */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F4F6F8; /* noduv-fondo */
+            background-color: #F4F6F8;
         }
         
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Hammersmith One', sans-serif;
         }
 
-        /* Ocultar vistas de apuntes por defecto */
         .note-view {
             display: none;
         }
         
-        /* Mostrar la vista activa */
         .note-view.active {
             display: block;
         }
         
-        /* Estilos para Tareas */
         .task-item span.completed {
             @apply line-through text-noduv-gris-medio;
         }
         
-        /* ¡NUEVO! Estilo para el botón de marcador */
         .bookmark-btn.saved {
-            fill: #4A90E2; /* noduv-celeste */
+            fill: #4A90E2; 
             color: #4A90E2;
         }
 
     </style>
     
     <script>
-        // Configuración personalizada de Tailwind
         tailwind.config = {
             theme: {
                 extend: {
-                    // Paleta de colores de NoduV
                     colors: {
                         'noduv-azul': '#1C3D5A',
                         'noduv-celeste': '#4A90E2',
@@ -67,7 +60,6 @@
                         'noduv-gris-claro': '#D8D8D8',
                         'noduv-fondo': '#F4F6F8',
                     },
-                    // Fuentes de NoduV
                     fontFamily: {
                         'hammersmith': ['"Hammersmith One"', 'sans-serif'],
                         'inter': ['"Inter"', 'sans-serif'],
@@ -79,9 +71,7 @@
 </head>
 <body class="bg-noduv-fondo text-noduv-texto">
 
-    <!-- 
-      BARRA DE NAVEGACIÓN SUPERIOR
-    -->
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR-->
     <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
         <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
             
@@ -118,7 +108,7 @@
             </div>
         </div>
 
-        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <!-- Menú Desplegable Móvil -->
         <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
              <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
             <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
@@ -133,15 +123,12 @@
         </div>
     </header>
 
-    <!-- 
-      CONTENEDOR PRINCIPAL
-    -->
+    <!-- CONTENEDOR PRINCIPAL-->
     <main class="container mx-auto px-4 md:px-8 py-10">
         
         <!-- Sección de Apuntes de IHC -->
         <section id="ihc">
 
-            <!-- Vista 1: Resumen (Mostrada por defecto) -->
             <div id="ihc-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
                 <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -174,12 +161,10 @@
                         </button>
                     </form>
                     <div id="todo-list" class="space-y-3">
-                        <!-- Tareas se renderizan aquí -->
                     </div>
                 </div>
             </div>
 
-            <!-- Vista 2: Índice de Apuntes (Oculta) -->
             <div id="ihc-notes" class="note-view">
                 <header class="text-center mb-8 relative">
                     <button id="back-to-ihc-summary-btn" class="absolute top-1/2 -translate-y-1/2 left-0 p-2 rounded-full text-noduv-gris-medio hover:bg-noduv-fondo" title="Volver">
@@ -191,7 +176,6 @@
                 <main>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
-                        <!-- Tarjeta de Apunte 1: Heurísticas -->
                         <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
                             <div class="flex justify-between items-start">
                                 <a href="#" id="show-heuristics-notes-btn" class="flex-grow">
@@ -209,7 +193,6 @@
                             <p class="text-noduv-gris-medio">Las 10 heurísticas de Nielsen y otros principios clave de UI y Arquitectura de la Información.</p>
                         </div>
 
-                        <!-- Tarjeta de Apunte 2: Wireframes -->
                         <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
                             <div class="flex justify-between items-start">
                                 <a href="#" id="show-wireframes-notes-btn" class="flex-grow">
@@ -227,7 +210,6 @@
                             <p class="text-noduv-gris-medio">Del boceto al producto: El proceso de ideación y creación de interfaces.</p>
                         </div>
                         
-                        <!-- Tarjeta de Apunte 3: Web Design -->
                         <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
                             <div class="flex justify-between items-start">
                                 <a href="#" id="show-webdesign-notes-btn" class="flex-grow">
@@ -245,7 +227,6 @@
                             <p class="text-noduv-gris-medio">Principios de diseño responsivo, tipografía, imágenes y patrones de interfaz.</p>
                         </div>
 
-                        <!-- Tarjeta de Apunte 4: Mobile UI -->
                         <div class="block bg-white rounded-lg p-6 shadow-md hover:shadow-lg border-2 border-transparent">
                             <div class="flex justify-between items-start">
                                 <a href="#" id="show-mobileui-notes-btn" class="flex-grow">
@@ -269,10 +250,7 @@
                     </div>
                 </main>
             </div>
-
-            <!-- Vistas de Detalle de Temas (Ocultas) -->
             
-            <!-- View 3: IHC Topic Detail (Heuristics) -->
             <div id="ihc-topic-heuristics" class="note-view">
                 <header class="mb-8 relative">
                     <button id="back-to-ihc-index-btn" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
@@ -292,7 +270,6 @@
                     </div>
                 </header>
                 <main class="space-y-8">
-                    <!-- ... (contenido de apuntes sin cambiar) ... -->
                     <div class="bg-white border border-noduv-gris-claro rounded-lg p-6">
                         <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Conceptos Fundamentales</h2>
                         <ul class="list-disc list-inside space-y-3">
@@ -356,7 +333,6 @@
                 </main>
             </div>
             
-            <!-- View 4: IHC Topic Detail (Wireframes) -->
             <div id="ihc-topic-wireframes" class="note-view">
                  <header class="mb-8 relative">
                     <button id="back-to-ihc-index-btn-wireframes" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
@@ -376,7 +352,6 @@
                     </div>
                 </header>
                 <main class="space-y-8">
-                    <!-- ... (contenido de apuntes sin cambiar) ... -->
                     <div class="bg-noduv-celeste/10 border border-noduv-celeste/30 rounded-lg p-6">
                         <h2 class="text-2xl font-semibold text-noduv-celeste mb-4">Del boceto al producto</h2>
                         <p class="text-lg text-noduv-texto">Después de definir los principios y elementos clave, el siguiente paso en el diseño de UI es el proceso de ideación y creación. Este camino va desde ideas iniciales de <strong class="text-noduv-texto">baja fidelidad</strong> hasta representaciones interactivas de <strong class="text-noduv-texto">alta fidelidad</strong>.</p>
@@ -432,7 +407,6 @@
                 </main>
             </div>
             
-            <!-- View 5: IHC Topic Detail (Web Design) -->
             <div id="ihc-topic-webdesign" class="note-view">
                  <header class="mb-8 relative">
                     <button id="back-to-ihc-index-btn-webdesign" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
@@ -452,11 +426,9 @@
                     </div>
                 </header>
                 <main class="space-y-8">
-                    <!-- ... (contenido de apuntes sin cambiar) ... -->
                 </main>
             </div>
 
-            <!-- View 6: IHC Topic Detail (Mobile UI) -->
             <div id="ihc-topic-mobileui" class="note-view">
                  <header class="mb-8 relative">
                     <button id="back-to-ihc-index-btn-mobileui" class="text-sm bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-semibold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center gap-2">
@@ -476,25 +448,20 @@
                     </div>
                 </header>
                 <main class="space-y-8">
-                    <!-- ... (contenido de apuntes sin cambiar) ... -->
                 </main>
             </div>
         </section>
 
     </main>
 
-    <!-- 
-      Footer (Consistente en todas las páginas)
-    -->
+    <!-- Footer  -->
     <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
         <div class="container mx-auto">
             <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- 
-      Enlace al archivo JavaScript
-    -->
+    <!-- Enlace al archivo JavaScript -->
     <script src="scripts/curso_ihc.js" defer></script>
 
 </body>

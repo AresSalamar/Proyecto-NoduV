@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - NoduV</title>
     
-    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cargamos Tailwind CSS -->
+     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- ¡NUEVO! Scripts de Firebase -->
+    <!-- Scripts de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -27,18 +28,16 @@
             font-family: 'Hammersmith One', sans-serif;
         }
 
-        /* Clase para el enlace de navegación activo */
         .nav-link.active {
-            color: #4A90E2; /* noduv-celeste */
-            border-bottom: 2px solid #4A90E2; /* noduv-celeste */
+            color: #4A90E2;
+            border-bottom: 2px solid #4A90E2;
             padding-bottom: 4px;
         }
         .nav-link-mobile.active {
-            color: #4A90E2; /* noduv-celeste */
-            background-color: #F4F6F8; /* noduv-fondo */
+            color: #4A90E2;
+            background-color: #F4F6F8; 
         }
         
-        /* Ocultar secciones por defecto */
         .page-section {
             display: none;
         }
@@ -46,13 +45,11 @@
             display: block;
         }
 
-        /* Estilo para el input de "Subir Archivo" (simulado) */
         .file-input-button {
             @apply block w-full px-4 py-3 text-left border border-noduv-gris-claro rounded-xl bg-white text-noduv-gris-medio;
             @apply hover:bg-noduv-fondo cursor-pointer transition-colors;
         }
 
-        /* Estilos para el Acordeón de Tips */
         .accordion-content {
             max-height: 0;
             overflow: hidden;
@@ -60,8 +57,8 @@
             padding: 0 1.5rem; /* 24px */
         }
         .accordion-item.active .accordion-content {
-            max-height: 500px; /* Altura suficiente para el contenido */
-            padding: 0.5rem 1.5rem 1.5rem; /* 8px 24px 24px */
+            max-height: 500px; 
+            padding: 0.5rem 1.5rem 1.5rem; 
         }
         .accordion-item.active .accordion-arrow {
             transform: rotate(180deg);
@@ -70,7 +67,6 @@
             transition: transform 0.3s ease-out;
         }
 
-        /* Estilos para el Sidebar */
         #sidebar {
             transition: transform 0.3s ease-in-out;
         }
@@ -78,10 +74,9 @@
             transition: opacity 0.3s ease-in-out;
         }
         body.sidebar-open {
-            overflow: hidden; /* Evita el scroll del body cuando el sidebar está abierto */
+            overflow: hidden; 
         }
 
-        /* Estilos para el Toggle Switch */
         .toggle-bg:after {
             content: '';
             @apply absolute top-[2px] left-[2px] bg-white border border-noduv-gris-claro rounded-full h-5 w-5;
@@ -91,13 +86,12 @@
             @apply translate-x-full border-white;
         }
         input:checked + .toggle-bg {
-            @apply bg-noduv-celeste; /* Color 'on' */
+            @apply bg-noduv-celeste; 
         }
 
     </style>
     
     <script>
-        // Configuración personalizada de Tailwind
         tailwind.config = {
             theme: {
                 extend: {
@@ -126,7 +120,7 @@
 <body class="bg-noduv-fondo text-noduv-texto">
 
     <!-- 
-      MENÚ LATERAL (SIDEBAR)
+      MENÚ LATERAL 
     -->
     <div id="sidebar-container" class="hidden">
         <!-- Overlay -->
@@ -234,7 +228,7 @@
     <main class="container mx-auto px-4 md:px-8 py-10">
 
         <!-- 
-          PÁGINA 1: INICIO (activa por defecto)
+           INICIO 
         -->
         <section id="inicio-page" class="page-section active">
             <div class="mb-10">
@@ -314,7 +308,7 @@
         </section>
 
         <!-- 
-          PÁGINA 2: CURSOS (oculta por defecto)
+          CURSOS 
         -->
         <section id="cursos-page" class="page-section">
             <div class="flex justify-between items-center mb-8">
@@ -390,7 +384,7 @@
         </section>
 
         <!-- 
-          PÁGINA 3: COMUNIDAD (Diseño de Foro)
+           COMUNIDAD (Diseño de un Foro)
         -->
         <section id="comunidad-page" class="page-section">
             <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
@@ -444,7 +438,7 @@
         </section>
 
         <!-- 
-          PÁGINA 4: RUTAS DE APRENDIZAJE
+         RUTAS DE APRENDIZAJE
         -->
         <section id="rutas-page" class="page-section">
             <div class="mb-10">
@@ -521,13 +515,13 @@
         </section>
         
         <!-- 
-          PÁGINA 5: MI PERFIL (oculta por defecto)
+         MI PERFIL 
         -->
         <section id="perfil-page" class="page-section">
             
             <div class="bg-white rounded-xl shadow-md p-8 md:flex items-center justify-between">
                 <div class="flex items-center">
-                    <img src="https://placehold.co/120x120/4A90E2/FFFFFF?text=Tu+Foto" alt="Foto de Perfil" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-noduv-celeste object-cover">
+                    <img src="assets/images/logonoduvn.png" alt="Foto de Perfil" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-noduv-celeste object-cover">
                     <div class="ml-6">
                         <h1 class="font-hammersmith text-3xl md:text-4xl text-noduv-azul">¡Hola, AresSalamar!</h1>
                         <p class="font-inter text-lg text-noduv-gris-medio">Delegado de Clase | 1er Puesto</p>
@@ -646,7 +640,6 @@
                     </div>
                 </div>
 
-                <!-- Placeholder para más apuntes -->
                 <div class="bg-white rounded-xl shadow-md border-2 border-dashed border-noduv-gris-claro flex items-center justify-center min-h-[240px]">
                     <p class="text-noduv-gris-medio text-center p-6">Aún no has guardado apuntes.</p>
                 </div>
@@ -655,7 +648,7 @@
         </section>
 
         <!-- 
-          PÁGINA 7: CONFIGURACIÓN
+         CONFIGURACIÓN
         -->
         <section id="configuracion-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Configuración</h1>
@@ -726,19 +719,18 @@
 
 
         <!-- 
-          PÁGINA 8: SOPORTE
+          SOPORTE
         -->
         <section id="soporte-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Ayuda y Soporte</h1>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <!-- Columna Izquierda: FAQ -->
+                <!-- Columna Izquierda -->
                 <div class="md:col-span-2 space-y-8">
                     <div class="bg-white rounded-xl shadow-md p-6">
                         <h2 class="font-hammersmith text-2xl text-noduv-azul mb-6">Preguntas Frecuentes (FAQ)</h2>
                         
-                        <!-- Acordeón de FAQ -->
                         <div id="soporte-accordion" class="space-y-2">
                             
                             <!-- Pregunta 1 -->
@@ -800,7 +792,7 @@
         </section>
 
         <!-- 
-          PÁGINA 9: SOLICITAR ROL
+         SOLICITAR ROL
         -->
         <section id="solicitar-rol-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Solicitar un Rol Superior</h1>
@@ -838,7 +830,7 @@
     </main>
 
     <!-- 
-      Footer (Consistente en todas las páginas)
+      Footer 
     -->
     <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
         <div class="container mx-auto">
@@ -884,7 +876,6 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         <span>Seleccionar archivo... (PDF, JPG, PNG)</span>
                     </button>
-                    <!-- <input type="file" class="hidden"> -->
                 </div>
                 <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105">
                     Publicar Apunte
@@ -955,10 +946,6 @@
         </div>
     </div>
 
-
-    <!-- 
-      Enlace al archivo JavaScript
-    -->
     <script src="scripts/dashboard.js" defer></script>
 
 </body>

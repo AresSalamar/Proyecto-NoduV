@@ -8,20 +8,13 @@ const firebaseConfig = {
   measurementId: "G-5LGG2BF6QY"
 };
 
-// Variable global para el App ID (para las reglas de seguridad de Firestore)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// ------------------------------------------------------------------
-// INICIALIZACIÓN DE FIREBASE
-// ------------------------------------------------------------------
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null; // Para guardar la info del usuario actual
 
-// ------------------------------------------------------------------
-// LÓGICA DE LA PÁGINA
-// ------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function () {
             
     // --- Lógica del Menú Móvil del Dashboard ---
@@ -88,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'proyectiles', backBtnId: 'proyectiles' }
     ]);
     
-    // --- Lógica de To-Do List (Simplificada para esta página) ---
     const todoForm = document.getElementById('todo-form');
     const todoInput = document.getElementById('todo-input');
     const todoList = document.getElementById('todo-list');
@@ -171,9 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
     renderTasks(); // Render inicial de tareas
 
 
-    // ------------------------------------------------------------------
-    // ¡NUEVA LÓGICA DE FIREBASE Y BIBLIOTECA!
-    // ------------------------------------------------------------------
 
     const allBookmarkButtons = document.querySelectorAll('.bookmark-btn');
     let userBibliotecaRef = null;
@@ -182,26 +171,19 @@ document.addEventListener('DOMContentLoaded', function () {
         if (user) {
             // El usuario ha iniciado sesión
             currentUser = user;
-            // Definir la referencia a la biblioteca del usuario
             userBibliotecaRef = db.collection('artifacts').doc(appId)
                                   .collection('users').doc(currentUser.uid)
                                   .collection('biblioteca');
             
-            // Comprobar el estado inicial de los marcadores
             checkInitialBookmarkState();
-            // Añadir los listeners a los botones
             addBookmarkListeners();
         } else {
-            // El usuario no ha iniciado sesión, proteger la página
             console.log("Usuario no autenticado, redirigiendo a index.html");
             window.location.href = 'index.html'; 
         }
     });
 
-    /**
-     * Comprueba el estado inicial de los marcadores en la página
-     * y los colorea si ya están guardados en Firebase.
-     */
+
     function checkInitialBookmarkState() {
         if (!userBibliotecaRef) return;
         
@@ -217,18 +199,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /**
-     * Añade los event listeners a todos los botones de marcador.
-     */
+
     function addBookmarkListeners() {
         allBookmarkButtons.forEach(btn => {
             btn.addEventListener('click', handleBookmarkClick);
         });
     }
 
-    /**
-     * Maneja el clic en un botón de marcador (guardar/quitar).
-     */
+
     function handleBookmarkClick(e) {
         if (!currentUser || !userBibliotecaRef) {
             alert("Error: No se pudo verificar el usuario.");
@@ -246,18 +224,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const apunteRef = userBibliotecaRef.doc(apunte.id);
 
         if (btn.classList.contains('saved')) {
-            // --- Ya está guardado, así que lo quitamos ---
             apunteRef.delete().then(() => {
                 console.log("Apunte quitado de la biblioteca");
-                // Sincronizar todos los botones con el mismo data-id
                 document.querySelectorAll(`.bookmark-btn[data-id="${apunte.id}"]`).forEach(b => b.classList.remove('saved'));
             }).catch(error => console.error("Error al quitar apunte: ", error));
             
         } else {
-            // --- No está guardado, así que lo añadimos ---
             apunteRef.set(apunte).then(() => {
                 console.log("Apunte guardado en la biblioteca");
-                // Sincronizar todos los botones con el mismo data-id
                 document.querySelectorAll(`.bookmark-btn[data-id="${apunte.id}"]`).forEach(b => b.classList.add('saved'));
             }).catch(error => console.error("Error al guardar apunte: ", error));
         }

@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
   apiKey: "AIzaSyDMfuoVZwNzMsnAuvzBW7qnStP7y8NP1oo",
   authDomain: "noduv-d146b.firebaseapp.com",
@@ -12,17 +11,13 @@ const firebaseConfig = {
 // Variable global para el App ID (para las reglas de seguridad de Firestore)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// ------------------------------------------------------------------
-// INICIALIZACIÓN DE FIREBASE
-// ------------------------------------------------------------------
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null; // Para guardar la info del usuario actual
 
-// ------------------------------------------------------------------
-// LÓGICA DE LA PÁGINA
-// ------------------------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', function () {
     
     const body = document.body;
@@ -44,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // --- LÓGICA DE "MI BIBLIOTECA" ---
+    // --- LÓGICA DE "MI BIBLIOTECA xd " ---
     const bibliotecaGrid = document.getElementById('biblioteca-grid');
     const bibliotecaVacia = document.getElementById('biblioteca-vacia');
 
@@ -301,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (e.target === logoutConfirmModal) hideLogoutModal();
         });
     }
-    // ¡NUEVO! Lógica de Logout Real
+    // Lógica de Logout Real
     if (logoutConfirmButton) {
         logoutConfirmButton.addEventListener('click', (e) => {
             e.preventDefault();

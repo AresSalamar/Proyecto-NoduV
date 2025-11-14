@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apuntes de Matemáticas - NoduV</title>
     
-    <!-- Cargamos Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Cargamos las fuentes de Google (Inter y Hammersmith One) --><link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -15,14 +15,13 @@
         /* Estilos personalizados */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F4F6F8; /* noduv-fondo */
+            background-color: #F4F6F8;
         }
         
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Hammersmith One', sans-serif;
         }
 
-        /* Ocultar vistas de apuntes por defecto */
         .note-view {
             display: none;
         }
@@ -30,18 +29,15 @@
             display: block;
         }
         
-        /* Estilos para Tareas */
         .task-item span.completed {
             @apply line-through text-noduv-gris-medio;
         }
     </style>
     
     <script>
-        // Configuración personalizada de Tailwind
         tailwind.config = {
             theme: {
                 extend: {
-                    // Paleta de colores de NoduV
                     colors: {
                         'noduv-azul': '#1C3D5A',
                         'noduv-celeste': '#4A90E2',
@@ -53,7 +49,6 @@
                         'noduv-gris-claro': '#D8D8D8',
                         'noduv-fondo': '#F4F6F8',
                     },
-                    // Fuentes de NoduV
                     fontFamily: {
                         'hammersmith': ['"Hammersmith One"', 'sans-serif'],
                         'inter': ['"Inter"', 'sans-serif'],
@@ -65,9 +60,6 @@
 </head>
 <body class="bg-noduv-fondo text-noduv-texto">
 
-    <!-- 
-      BARRA DE NAVEGACIÓN SUPERIOR
-    -->
     <header class="bg-white text-noduv-texto shadow-sm sticky top-0 z-40"> 
         <div class="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
             
@@ -93,7 +85,7 @@
                 <a href="dashboard.html#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste">Mi Perfil</a>
             </nav>
 
-            <!-- Botones (Desktop y Móvil) -->
+            <!-- Botones -->
             <div class="flex items-center">
                 <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
                     Subir Apunte
@@ -104,9 +96,9 @@
             </div>
         </div>
 
-        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <!-- Menú Desplegable Móvil -->
         <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
-             <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
+            <a href="dashboard.html#inicio" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Inicio</a>
             <a href="dashboard.html#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Cursos</a>
             <a href="dashboard.html#comunidad" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Comunidad</a>
             <a href="dashboard.html#rutas" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo">Rutas de Aprendizaje</a>
@@ -119,15 +111,13 @@
         </div>
     </header>
 
-    <!-- 
-      CONTENEDOR PRINCIPAL
-    -->
+    <!-- CONTENEDOR PRINCIPAL-->
     <main class="container mx-auto px-4 md:px-8 py-10">
         
         <!-- Sección de Apuntes de Matemáticas -->
         <section id="mate">
 
-            <!-- Vista 1: Resumen (Mostrada por defecto) -->
+            <!-- Resumen  -->
             <div id="mate-summary" class="bg-white p-6 md:p-8 rounded-xl shadow-md note-view active">
                 <a href="dashboard.html#cursos" class="inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-4">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -169,18 +159,13 @@
 
     </main>
 
-    <!-- 
-      Footer (Consistente en todas las páginas)
-    -->
+    <!-- Footer -->
     <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
         <div class="container mx-auto">
             <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- 
-      Enlace al archivo JavaScript
-    -->
     <script src="scripts/curso_mate.js" defer></script>
 
 </body>

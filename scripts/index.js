@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
   apiKey: "AIzaSyDMfuoVZwNzMsnAuvzBW7qnStP7y8NP1oo",
   authDomain: "noduv-d146b.firebaseapp.com",
@@ -12,9 +11,6 @@ const firebaseConfig = {
 // Variable global para el App ID (para las reglas de seguridad de Firestore)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-// ------------------------------------------------------------------
-// LÓGICA DE LA PÁGINA
-// ------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function () {
     
     // --- Lógica del Menú Móvil ---
@@ -135,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // --- Lógica de Autenticación (¡CORREGIDA!) ---
+    // --- Lógica de Autenticación  ---
     
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
@@ -148,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Comprobar si la config de Firebase está rellenada
     if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "¡PEGA TU API KEY AQUÍ!") {
         
-        // --- MODO 1: FIREBASE REAL (Si la config está puesta) ---
+        // --- MODO 1: FIREBASE REAL  ---
         
         // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
