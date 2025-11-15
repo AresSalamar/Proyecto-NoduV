@@ -89,6 +89,33 @@
             @apply bg-noduv-celeste; 
         }
 
+        .prose {
+            @apply text-lg;
+        }
+        .prose h1, .prose h2, .prose h3 {
+            @apply text-noduv-azul mt-6 mb-3;
+        }
+        .prose h1 { @apply text-3xl; }
+        .prose h2 { @apply text-2xl; }
+        .prose h3 { @apply text-xl; }
+        .prose p { @apply mb-4; }
+        .prose ul, .prose ol {
+            @apply list-disc list-inside mb-4 pl-4;
+        }
+        .prose strong {
+            @apply text-noduv-texto;
+        }
+        .prose code {
+            @apply bg-noduv-fondo text-noduv-celeste p-1 rounded-md text-sm;
+        }
+        .prose pre {
+            @apply bg-noduv-azul text-white p-4 rounded-lg overflow-x-auto;
+        }
+        .prose blockquote {
+            @apply border-l-4 border-noduv-celeste pl-4 text-noduv-gris-medio italic;
+        }
+
+
     </style>
     
     <script>
@@ -147,7 +174,7 @@
                     <span>Mi Biblioteca</span>
                 </a>
                 <a href="#configuracion" class="nav-link-sidebar flex items-center gap-3 p-3 rounded-lg font-medium text-noduv-texto hover:bg-noduv-fondo hover:text-noduv-celeste" data-target="configuracion-page">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span>Configuración</span>
                 </a>
                 <a href="#solicitar-rol" class="nav-link-sidebar flex items-center gap-3 p-3 rounded-lg font-medium text-noduv-texto hover:bg-noduv-fondo hover:text-noduv-celeste" data-target="solicitar-rol-page">
@@ -196,10 +223,10 @@
                 <a href="#perfil" class="nav-link font-inter text-lg font-medium text-noduv-gris-medio hover:text-noduv-celeste" data-target="perfil-page">Mi Perfil</a>
             </nav>
 
-            <!-- Botones (Desktop y Móvil) -->
+            <!-- Botones -->
             <div class="flex items-center">
                 <button id="open-upload-button-header" class="hidden md:block bg-noduv-celeste text-white font-inter font-medium py-2 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
-                    Subir Apunte
+                    Crear Apunte
                 </button>
                 <button id="mobile-menu-button-dash" class="md:hidden text-noduv-azul ml-4" aria-label="Abrir menú">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
@@ -207,7 +234,7 @@
             </div>
         </div>
 
-        <!-- Menú Desplegable Móvil (Navegación de contenido) -->
+        <!-- Menú Desplegable Móvil -->
         <div id="mobile-menu-dash" class="hidden md:hidden bg-white shadow-lg">
              <a href="#inicio" class="nav-link-mobile block text-center text-lg py-3 border-b border-noduv-fondo active" data-target="inicio-page">Inicio</a>
             <a href="#cursos" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo" data-target="cursos-page">Cursos</a>
@@ -216,15 +243,13 @@
             <a href="#perfil" class="nav-link-mobile block text-center text-noduv-gris-medio text-lg py-3 border-b border-noduv-fondo hover:bg-noduv-fondo" data-target="perfil-page">Mi Perfil</a>
             <div class="p-4">
                 <button id="open-upload-button-mobile" class="w-full bg-noduv-celeste text-white font-inter font-medium py-3 px-6 rounded-lg shadow-md hover:bg-noduv-azul transition-colors">
-                    Subir Apunte
+                    Crear Apunte
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- 
-      CONTENEDOR PRINCIPAL
-    -->
+    <!-- CONTENEDOR PRINCIPAL-->
     <main class="container mx-auto px-4 md:px-8 py-10">
 
         <!-- 
@@ -307,9 +332,7 @@
             </div>
         </section>
 
-        <!-- 
-          CURSOS 
-        -->
+        <!-- CURSOS -->
         <section id="cursos-page" class="page-section">
             <div class="flex justify-between items-center mb-8">
                 <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul">Descubre Apuntes</h1>
@@ -322,70 +345,23 @@
                     </form>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Física</h3>
-                            <span class="text-sm font-medium bg-noduv-exito/20 text-noduv-exito px-3 py-1 rounded-full">Popular</span>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">Leyes de Newton, Cinemática, Proyectiles...</p>
-                        <div class="flex items-center text-sm text-noduv-gris-medio mb-5">
-                            <span class="font-semibold text-noduv-alerta mr-1">★ 5.0</span> (250 Descargas)
-                        </div>
-                        <a href="curso_fisica.html" class="block w-full text-center bg-noduv-celeste text-white font-inter font-semibold py-3 rounded-lg hover:bg-noduv-azul transition-colors">
-                            Ver Apuntes
-                        </a>
-                    </div>
+            <!-- ===== CONTENEDOR DE CURSOS MODIFICADO ===== -->
+            <div id="cursos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Estado de Carga -->
+                <div id="cursos-loading" class="md:col-span-4 text-center p-10">
+                    <p class="text-lg text-noduv-gris-medio">Cargando apuntes...</p>
                 </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">IHC</h3>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">Heurísticas, Wireframes, Prototipos, UX/UI...</p>
-                        <div class="flex items-center text-sm text-noduv-gris-medio mb-5">
-                            <span class="font-semibold text-noduv-alerta mr-1">★ 4.9</span> (180 Descargas)
-                        </div>
-                        <a href="curso_ihc.html" class="block w-full text-center bg-noduv-celeste text-white font-inter font-semibold py-3 rounded-lg hover:bg-noduv-azul transition-colors">
-                            Ver Apuntes
-                        </a>
-                    </div>
+                <!-- Estado Vacío -->
+                <div id="cursos-vacia" class="hidden md:col-span-4 text-center p-10 bg-white rounded-lg shadow-md">
+                    <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">No hay apuntes</h3>
+                    <p class="text-noduv-gris-medio">¡Sé el primero en crear un apunte para un curso!</p>
                 </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Diseño y Patrones</h3>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">Patrones GoF, Creacionales, Estructurales...</p>
-                        <div class="flex items-center text-sm text-noduv-gris-medio mb-5">
-                            <span class="font-semibold text-noduv-alerta mr-1">★ 4.8</span> (150 Descargas)
-                        </div>
-                        <a href="curso_diseno.html" class="block w-full text-center bg-noduv-celeste text-white font-inter font-semibold py-3 rounded-lg hover:bg-noduv-azul transition-colors">
-                            Ver Apuntes
-                        </a>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Matemáticas</h3>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">Cálculo, Discreta, Estadística...</p>
-                        <div class="flex items-center text-sm text-noduv-gris-medio mb-5">
-                            <span class="font-semibold text-noduv-alerta mr-1">★ 4.5</span> (90 Descargas)
-                        </div>
-                        <a href="curso_mate.html" class="block w-full text-center bg-noduv-celeste text-white font-inter font-semibold py-3 rounded-lg hover:bg-noduv-azul transition-colors">
-                            Ver Apuntes
-                        </a>
-                    </div>
-                </div>
+                <!-- Las tarjetas de apuntes se cargarán aquí -->
             </div>
+            <!-- ===== FIN DE SECCIÓN MODIFICADA ===== -->
         </section>
 
-        <!-- 
-           COMUNIDAD (Diseño de un Foro)
-        -->
+        <!-- COMUNIDAD (Diseño de un Foro) -->
         <section id="comunidad-page" class="page-section">
             <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
                 <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul">Comunidad</h1>
@@ -400,46 +376,71 @@
                 <button class="bg-white text-noduv-gris-medio font-inter text-sm py-2 px-4 rounded-full hover:bg-gray-200">Más Populares</button>
                 <button class="bg-white text-noduv-gris-medio font-inter text-sm py-2 px-4 rounded-full hover:bg-gray-200">Sin Responder</button>
             </div>
-            <div class="space-y-6">
-                <a href="#" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
-                        <h3 class="font-hammersmith text-xl md:text-2xl text-noduv-celeste hover:underline">¿Alguien tiene tips para el parcial de Física?</h3>
-                        <span class="flex-shrink-0 bg-noduv-celeste/20 text-noduv-celeste text-sm font-medium px-3 py-1 rounded-full mt-2 sm:mt-0">5 Respuestas</span>
-                    </div>
-                    <div class="flex items-center text-sm text-noduv-gris-medio">
-                        <img src="https://placehold.co/32x32/F5A623/FFFFFF?text=A" alt="Avatar" class="w-8 h-8 rounded-full mr-3">
-                        <span>Publicado por <strong>AresSalamar</strong> en <span class="font-semibold text-noduv-azul">Física</span></span>
-                        <span class="ml-auto text-xs">hace 2 horas</span>
-                    </div>
-                </a>
-                <a href="#" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
-                        <h3 class="font-hammersmith text-xl md:text-2xl text-noduv-celeste hover:underline">Duda sobre Patrón Singleton en Diseño</h3>
-                        <span class="flex-shrink-0 bg-noduv-celeste/20 text-noduv-celeste text-sm font-medium px-3 py-1 rounded-full mt-2 sm:mt-0">2 Respuestas</span>
-                    </div>
-                    <div class="flex items-center text-sm text-noduv-gris-medio">
-                        <img src="https://placehold.co/32x32/4A90E2/FFFFFF?text=M" alt="Avatar" class="w-8 h-8 rounded-full mr-3">
-                        <span>Publicado por <strong>MariaLopez</strong> en <span class="font-semibold text-noduv-azul">Diseño y Patrones</span></span>
-                        <span class="ml-auto text-xs">hace 5 horas</span>
-                    </div>
-                </a>
-                <a href="#" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
-                        <h3 class="font-hammersmith text-xl md:text-2xl text-noduv-celeste hover:underline">¿Mejor forma de estudiar las Heurísticas de Nielsen?</h3>
-                        <span class="flex-shrink-0 bg-noduv-gris-claro text-noduv-gris-medio text-sm font-medium px-3 py-1 rounded-full mt-2 sm:mt-0">0 Respuestas</span>
-                    </div>
-                    <div class="flex items-center text-sm text-noduv-gris-medio">
-                        <img src="https://placehold.co/32x32/D0021B/FFFFFF?text=J" alt="Avatar" class="w-8 h-8 rounded-full mr-3">
-                        <span>Publicado por <strong>JuanPerez</strong> en <span class="font-semibold text-noduv-azul">IHC</span></span>
-                        <span class="ml-auto text-xs">hace 1 día</span>
-                    </div>
-                </a>
+            
+            <!-- CONTENEDOR DE PUBLICACIONES DINÁMICAS -->
+            <!-- Estado de Carga -->
+            <div id="comunidad-loading" class="text-center p-10">
+                <p class="text-lg text-noduv-gris-medio">Cargando publicaciones...</p>
             </div>
+            
+            <!-- Estado Vacío -->
+            <div id="comunidad-vacia" class="hidden text-center p-10 bg-white rounded-lg shadow-md">
+                <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">No hay publicaciones</h3>
+                <p class="text-noduv-gris-medio">¡Sé el primero en crear una publicación y empezar la conversación!</p>
+            </div>
+
+            <!-- Contenedor de Posts -->
+            <div id="comunidad-posts-container" class="space-y-6">
+                <!-- Las publicaciones se cargarán aquí desde Firebase -->
+            </div>
+            
         </section>
 
-        <!-- 
-         RUTAS DE APRENDIZAJE
-        -->
+        <!-- ===== SECCIÓN: DETALLE DE PUBLICACIÓN (Comunidad) ===== -->
+        <section id="comunidad-post-detail-page" class="page-section">
+            
+            <!-- Botón de Volver -->
+            <a href="#comunidad" class="nav-link inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-6" data-target="comunidad-page">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Volver a la Comunidad
+            </a>
+
+            <!-- Contenedor del Post Original -->
+            <div id="post-detail-content" class="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8">
+                <!-- El contenido del post se cargará aquí (spinner de carga) -->
+                <p class="text-noduv-gris-medio text-center p-8">Cargando publicación...</p>
+            </div>
+
+            <!-- Lista de Respuestas -->
+            <h2 class="font-hammersmith text-3xl text-noduv-azul mb-6">Respuestas</h2>
+            <div id="post-replies-container" class="space-y-6 mb-8">
+                <!-- Las respuestas se cargarán aquí -->
+                <p id="replies-loading" class="text-noduv-gris-medio text-center">Cargando respuestas...</p>
+                <p id="replies-vacia" class="text-noduv-gris-medio text-center hidden">Aún no hay respuestas. ¡Sé el primero en comentar!</p>
+            </div>
+
+            <!-- Formulario para Añadir Respuesta -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-md">
+                <h3 class="font-hammersmith text-2xl text-noduv-azul mb-4">Añadir una Respuesta</h3>
+                <form id="reply-form" class="space-y-4">
+                    <div>
+                        <label for="reply-contenido" class="block text-sm font-medium text-noduv-texto mb-2">Tu respuesta</label>
+                        <textarea id="reply-contenido" rows="4" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Escribe tu respuesta..." required></textarea>
+                    </div>
+                    
+                    <p id="reply-error" class="text-noduv-error text-sm text-center hidden"></p>
+
+                    <button type="submit" class="w-full md:w-auto bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg">
+                        Publicar Respuesta
+                    </button>
+                </form>
+            </div>
+
+        </section>
+        <!-- ===== FIN DE SECCIÓN ===== -->
+
+
+        <!-- RUTAS DE APRENDIZAJE -->
         <section id="rutas-page" class="page-section">
             <div class="mb-10">
                 <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul">Rutas de Aprendizaje</h1>
@@ -450,7 +451,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2 space-y-8">
                     <h3 class="font-hammersmith text-2xl text-noduv-azul mb-4">Rutas Recomendadas</h3>
-                    <a href="curso_fisica.html" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <a href="#" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
                             <h3 class="font-hammersmith text-xl md:text-2xl text-noduv-celeste hover:underline">Ruta: Fundamentos de Física</h3>
                             <span class="flex-shrink-0 bg-noduv-celeste/20 text-noduv-celeste text-sm font-medium px-3 py-1 rounded-full mt-2 sm:mt-0">3 Pasos</span>
@@ -461,7 +462,7 @@
                             <span>Creada por <strong>AresSalamar</strong></span>
                         </div>
                     </a>
-                    <a href="curso_diseno.html" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                    <a href="#" class="block bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
                             <h3 class="font-hammersmith text-xl md:text-2xl text-noduv-celeste hover:underline">Ruta: Intro al Diseño de Software</h3>
                             <span class="flex-shrink-0 bg-noduv-celeste/20 text-noduv-celeste text-sm font-medium px-3 py-1 rounded-full mt-2 sm:mt-0">2 Pasos</span>
@@ -514,23 +515,21 @@
             </div>
         </section>
         
-        <!-- 
-         MI PERFIL 
-        -->
+        <!--MI PERFIL-->
         <section id="perfil-page" class="page-section">
             
             <div class="bg-white rounded-xl shadow-md p-8 md:flex items-center justify-between">
                 <div class="flex items-center">
                     <img src="assets/images/logonoduvn.png" alt="Foto de Perfil" class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-noduv-celeste object-cover">
                     <div class="ml-6">
-                        <h1 class="font-hammersmith text-3xl md:text-4xl text-noduv-azul">¡Hola, AresSalamar!</h1>
+                        <h1 id="perfil-user-name" class="font-hammersmith text-3xl md:text-4xl text-noduv-azul">¡Hola, ...!</h1>
                         <p class="font-inter text-lg text-noduv-gris-medio">Delegado de Clase | 1er Puesto</p>
                         <p class="font-inter text-sm text-noduv-exito font-bold">Nivel 12 - Colaborador Experto</p>
                     </div>
                 </div>
                 <div class="mt-6 md:mt-0 flex flex-col md:flex-row gap-4">
                     <button id="open-upload-button-profile" class="w-full md:w-auto bg-noduv-exito text-noduv-azul font-inter font-semibold py-3 px-6 rounded-lg hover:bg-green-600 hover:text-white transition-colors">
-                        Subir Apunte
+                        Crear Apunte
                     </button>
                     <button class="w-full md:w-auto bg-noduv-azul text-white font-inter font-semibold py-3 px-6 rounded-lg hover:bg-noduv-celeste transition-colors">
                         Editar Perfil
@@ -553,51 +552,24 @@
             </div>
             <div class="mt-12">
                 <h2 class="font-hammersmith text-3xl text-noduv-azul mb-6">Mis Apuntes Publicados</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <div class="p-6">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Física</h3>
-                            <p class="font-inter text-noduv-gris-medio mb-4 h-12">Leyes de Newton, Cinemática, Proyectiles...</p>
-                            <a href="curso_fisica.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                                Ver mis apuntes
-                            </a>
-                        </div>
+                <!-- ===== CONTENEDOR DE PERFIL-APUNTES MODIFICADO ===== -->
+                <div id="perfil-apuntes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <!-- Estado de Carga -->
+                    <div id="perfil-apuntes-loading" class="md:col-span-4 text-center p-10">
+                        <p class="text-lg text-noduv-gris-medio">Cargando mis apuntes...</p>
                     </div>
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <div class="p-6">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">IHC</h3>
-                            <p class="font-inter text-noduv-gris-medio mb-4 h-12">Heurísticas, Wireframes, Prototipos, UX/UI...</p>
-                            <a href="curso_ihc.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                                Ver mis apuntes
-                            </a>
-                        </div>
+                    <!-- Estado Vacío -->
+                    <div id="perfil-apuntes-vacia" class="hidden md:col-span-4 text-center p-10 bg-white rounded-lg shadow-md">
+                        <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">No has publicado apuntes</h3>
+                        <p class="text-noduv-gris-medio">¡Haz clic en "Crear Apunte" para empezar a compartir!</p>
                     </div>
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <div class="p-6">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Diseño y Patrones</h3>
-                            <p class="font-inter text-noduv-gris-medio mb-4 h-12">Patrones GoF, Creacionales, Estructurales...</p>
-                            <a href="curso_diseno.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                                Ver mis apuntes
-                            </a>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                        <div class="p-6">
-                            <h3 class="font-hammersmith text-2xl text-noduv-azul">Matemáticas</h3>
-                            <p class="font-inter text-noduv-gris-medio mb-4 h-12">Cálculo, Discreta, Estadística...</p>
-                            <a href="curso_mate.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                                Ver mis apuntes
-                            </a>
-                        </div>
-                    </div>
+                    <!-- Los apuntes del usuario se cargarán aquí -->
                 </div>
             </div>
             
         </section>
 
-        <!-- 
-          PÁGINA 6: MI BIBLIOTECA
-        -->
+        <!-- MI BIBLIOTECA-->
         <section id="biblioteca-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Mi Biblioteca</h1>
             <p class="font-inter text-lg text-noduv-gris-medio max-w-2xl mb-8">
@@ -605,51 +577,19 @@
             </p>
 
             <!-- Grid de Apuntes Guardados -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                
-                <!-- Apunte Guardado 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-celeste hover:underline cursor-pointer">Leyes de Newton</h3>
-                            <!-- Botón de "Quitar de Favoritos" -->
-                            <button class="text-noduv-celeste hover:text-noduv-error" title="Quitar de Mi Biblioteca">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21z"></path></svg>
-                            </button>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">Un resumen de las 3 leyes de Newton con ejemplos.</p>
-                        <a href="curso_fisica.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                            Ir al Apunte
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Apunte Guardado 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-hammersmith text-2xl text-noduv-celeste hover:underline cursor-pointer">10 Heurísticas de Nielsen</h3>
-                             <button class="text-noduv-celeste hover:text-noduv-error" title="Quitar de Mi Biblioteca">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21z"></path></svg>
-                            </button>
-                        </div>
-                        <p class="font-inter text-noduv-gris-medio mb-4">El resumen definitivo de las 10 heurísticas de usabilidad.</p>
-                        <a href="curso_ihc.html" class="block w-full text-center bg-noduv-fondo text-noduv-celeste font-inter font-semibold py-3 rounded-lg hover:bg-noduv-celeste hover:text-white border-2 border-noduv-celeste transition-colors">
-                            Ir al Apunte
-                        </a>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md border-2 border-dashed border-noduv-gris-claro flex items-center justify-center min-h-[240px]">
-                    <p class="text-noduv-gris-medio text-center p-6">Aún no has guardado apuntes.</p>
-                </div>
-
+            <!-- Estado Vacío -->
+            <div id="biblioteca-vacia" class="hidden text-center p-10 bg-white rounded-lg shadow-md">
+                <h3 class="font-hammersmith text-2xl text-noduv-azul mb-2">Tu biblioteca está vacía</h3>
+                <p class="text-noduv-gris-medio">Guarda apuntes usando el ícono de marcador 🔖 para verlos aquí.</p>
+            </div>
+            
+            <!-- Contenedor de la Biblioteca -->
+            <div id="biblioteca-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- Los apuntes guardados se cargarán aquí desde Firebase -->
             </div>
         </section>
 
-        <!-- 
-         CONFIGURACIÓN
-        -->
+        <!--CONFIGURACIÓN-->
         <section id="configuracion-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Configuración</h1>
             
@@ -661,7 +601,6 @@
                         <h2 class="font-hammersmith text-2xl text-noduv-azul mb-4">Preferencias de Notificaciones</h2>
                     </div>
                     <ul class="divide-y divide-noduv-fondo">
-                        <!-- Toggle 1: Actividad en mis apuntes -->
                         <li class="flex justify-between items-center p-6">
                             <div>
                                 <h3 class="font-inter font-semibold text-noduv-texto">Actividad en mis apuntes</h3>
@@ -672,7 +611,6 @@
                               <div class="w-11 h-6 bg-noduv-gris-claro rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-noduv-celeste toggle-bg"></div>
                             </label>
                         </li>
-                        <!-- Toggle 2: Creadores que sigo -->
                         <li class="flex justify-between items-center p-6">
                             <div>
                                 <h3 class="font-inter font-semibold text-noduv-texto">Creadores que sigo</h3>
@@ -683,7 +621,6 @@
                               <div class="w-11 h-6 bg-noduv-gris-claro rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-noduv-celeste toggle-bg"></div>
                             </label>
                         </li>
-                        <!-- Toggle 3: Alertas de Reportes -->
                         <li class="flex justify-between items-center p-6">
                             <div>
                                 <h3 class="font-inter font-semibold text-noduv-texto">Alertas de Reportes</h3>
@@ -697,7 +634,6 @@
                     </ul>
                 </div>
                 
-                <!-- Card de Seguridad -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
                     <div class="p-6">
                         <h2 class="font-hammersmith text-2xl text-noduv-azul mb-4">Seguridad</h2>
@@ -718,9 +654,7 @@
         </section>
 
 
-        <!-- 
-          SOPORTE
-        -->
+        <!--SOPORTE-->
         <section id="soporte-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Ayuda y Soporte</h1>
             
@@ -740,7 +674,7 @@
                                     <span class="accordion-arrow text-noduv-celeste text-2xl font-light">▾</span>
                                 </button>
                                 <div class="accordion-content text-noduv-gris-medio">
-                                    <p>¡Es muy fácil! Ve a tu "Mi Perfil" y haz clic en el botón "Subir Apunte". Se abrirá un formulario donde podrás añadir el título, descripción, seleccionar el curso y subir tu archivo (PDF, JPG, etc.).</p>
+                                    <p>¡Es muy fácil! Ve a tu "Mi Perfil" o haz clic en "Crear Apunte". Se abrirá un formulario donde podrás añadir el título, descripción, seleccionar el curso y escribir o pegar el contenido de tu apunte.</p>
                                 </div>
                             </div>
 
@@ -751,7 +685,7 @@
                                     <span class="accordion-arrow text-noduv-celeste text-2xl font-light">▾</span>
                                 </button>
                                 <div class="accordion-content text-noduv-gris-medio">
-                                    <p>Ganas puntos automáticamente por contribuir a la comunidad. Subir apuntes, recibir buenas calificaciones en ellos y ayudar a otros en la sección de "Comunidad" son las mejores formas de subir de nivel y ganar insignias.</p>
+                                    <p>Ganas puntos automáticamente por contribuir a la comunidad. Crear apuntes, recibir buenas calificaciones en ellos y ayudar a otros en la sección de "Comunidad" son las mejores formas de subir de nivel y ganar insignias.</p>
                                 </div>
                             </div>
                             
@@ -791,9 +725,7 @@
             </div>
         </section>
 
-        <!-- 
-         SOLICITAR ROL
-        -->
+        <!-- SOLICITAR ROL -->
         <section id="solicitar-rol-page" class="page-section">
             <h1 class="font-hammersmith text-4xl md:text-5xl text-noduv-azul mb-8">Solicitar un Rol Superior</h1>
             <p class="font-inter text-lg text-noduv-gris-medio max-w-3xl mb-8">
@@ -827,25 +759,41 @@
             </div>
         </section>
 
+        <!-- ===== SECCIÓN: DETALLE DEL APUNTE (Cursos) ===== -->
+        <section id="apunte-detail-page" class="page-section">
+            
+            <!-- Botón de Volver -->
+            <a href="#cursos" class="nav-link inline-flex items-center gap-2 text-noduv-celeste font-semibold hover:underline mb-6" data-target="cursos-page">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Volver a Cursos
+            </a>
+
+            <!-- Contenedor del Apunte -->
+            <div id="apunte-detail-content" class="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8">
+                <!-- El contenido del apunte se cargará aquí -->
+                <p class="text-noduv-gris-medio text-center p-8">Cargando apunte...</p>
+            </div>
+            
+            <!-- (Próximamente) Sección de Comentarios del Apunte -->
+            
+        </section>
+        <!-- ===== FIN DE NUEVA SECCIÓN ===== -->
+
     </main>
 
-    <!-- 
-      Footer 
-    -->
+    <!--Footer -->
     <footer class="bg-noduv-azul text-white p-8 text-center mt-16">
         <div class="container mx-auto">
             <p class="font-inter text-sm">&copy; 2025 NoduV. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- 
-      MODAL PARA SUBIR APUNTES
-    -->
+    <!-- MODAL PARA CREAR APUNTES -->
     <div id="upload-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl"> <!-- Hecho más ancho -->
             
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold text-noduv-azul font-hammersmith">Subir Nuevo Apunte</h2>
+                <h2 class="text-3xl font-bold text-noduv-azul font-hammersmith">Crear Nuevo Apunte</h2>
                 <button id="close-upload-modal" class="text-noduv-gris-medio hover:text-noduv-texto transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
@@ -854,29 +802,33 @@
             <form id="upload-form" class="space-y-6">
                 <div>
                     <label for="upload-titulo" class="block text-sm font-medium text-noduv-texto mb-2">Título del Apunte</label>
-                    <input type="text" id="upload-titulo" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Ej: Resumen Semana 5 - Leyes de Newton">
+                    <input type="text" id="upload-titulo" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Ej: Resumen Semana 5 - Leyes de Newton" required>
                 </div>
-                <div>
-                    <label for="upload-descripcion" class="block text-sm font-medium text-noduv-texto mb-2">Descripción</label>
-                    <textarea id="upload-descripcion" rows="3" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="¿Qué temas cubre este apunte?"></textarea>
-                </div>
+                
                 <div>
                     <label for="upload-curso" class="block text-sm font-medium text-noduv-texto mb-2">Curso</label>
-                    <select id="upload-curso" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent">
+                    <select id="upload-curso" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" required>
                         <option value="" disabled selected>Selecciona un curso...</option>
                         <option value="fisica">Física</option>
                         <option value="ihc">Interacción Humano-Computadora (IHC)</option>
                         <option value="diseno">Diseño y Patrones de Software</option>
                         <option value="mate">Matemáticas</option>
+                        <option value="otro">Otro</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-medium text-noduv-texto mb-2">Archivo</label>
-                    <button type="button" class="file-input-button flex items-center gap-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        <span>Seleccionar archivo... (PDF, JPG, PNG)</span>
-                    </button>
+                    <label for="upload-descripcion" class="block text-sm font-medium text-noduv-texto mb-2">Descripción Corta</label>
+                    <textarea id="upload-descripcion" rows="2" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="¿Qué temas cubre este apunte?" required></textarea>
                 </div>
+                
+                <div>
+                    <label for="upload-contenido" class="block text-sm font-medium text-noduv-texto mb-2">Contenido del Apunte</label>
+                    <textarea id="upload-contenido" rows="10" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Escribe o pega tu apunte aquí. Puedes usar Markdown simple para títulos (#), listas (*) y negritas (**)." required></textarea>
+                </div>
+
+                <p id="upload-error" class="text-noduv-error text-sm text-center hidden"></p>
+                
                 <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105">
                     Publicar Apunte
                 </button>
@@ -884,9 +836,7 @@
         </div>
     </div>
 
-    <!-- 
-      MODAL PARA CREAR PUBLICACIÓN
-    -->
+    <!-- MODAL PARA CREAR PUBLICACIÓN -->
     <div id="post-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
             
@@ -901,12 +851,12 @@
                 
                 <div>
                     <label for="post-titulo" class="block text-sm font-medium text-noduv-texto mb-2">Título de la Pregunta</label>
-                    <input type="text" id="post-titulo" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Ej: ¿Alguien entendió la última clase de Cálculo?">
+                    <input type="text" id="post-titulo" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Ej: ¿Alguien entendió la última clase de Cálculo?" required>
                 </div>
                 
                 <div>
-                    <label for="post-contenido" class="block text-sm font-medium text-noduv-texto mb-2">Contenido</label>
-                    <textarea id="post-contenido" rows="5" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Escribe tu pregunta o duda aquí..."></textarea>
+                    <label for="post-contenido" class="block text-sm font-medium text-noduv-texto mb-2">Contenido</LabeL>
+                    <textarea id="post-contenido" rows="5" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Escribe tu pregunta o duda aquí..." required></textarea>
                 </div>
                 
                 <div>
@@ -920,6 +870,9 @@
                         <option value="general">Discusión General</option>
                     </select>
                 </div>
+
+                <!-- Mensaje de Error para el modal de post -->
+                <p id="post-error" class="text-noduv-error text-sm text-center hidden"></p>
                 
                 <button type="submit" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors shadow-lg transform hover:scale-105">
                     Publicar Pregunta
@@ -928,9 +881,7 @@
         </div>
     </div>
     
-    <!-- 
-      MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN
-    -->
+    <!-- MODAL DE CONFIRMACIÓN DE CERRAR SESIÓN -->
     <div id="logout-confirm-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm">
             <h2 class="text-2xl font-bold text-center text-noduv-azul font-hammersmith mb-4">Cerrar Sesión</h2>
@@ -945,6 +896,89 @@
             </div>
         </div>
     </div>
+
+    <!-- ===== MODAL: NORMAS DE LA COMUNIDAD ===== -->
+    <div id="community-rules-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
+            <h2 class="text-3xl font-bold text-center text-noduv-azul font-hammersmith mb-6">Normas de la Comunidad NoduV</h2>
+            
+            <div class="space-y-4 text-noduv-gris-medio max-h-64 overflow-y-auto pr-2">
+                <p>¡Bienvenido a la comunidad! Para mantener este espacio positivo y productivo, te pedimos seguir estas reglas:</p>
+                
+                <div class="bg-noduv-fondo p-4 rounded-lg">
+                    <h3 class="font-semibold text-noduv-texto">1. Sé Respetuoso</h3>
+                    <p class="text-sm">Trata a todos con respeto. No se tolera el acoso, los insultos, el discurso de odio o cualquier tipo de discriminación.</p>
+                </div>
+
+                <div class="bg-noduv-fondo p-4 rounded-lg">
+                    <h3 class="font-semibold text-noduv-texto">2. Mantén el Enfoque Académico</h3>
+                    <p class="text-sm">Esta es una comunidad para aprender. Publica preguntas, respuestas y discusiones relevantes para los cursos y el estudio.</p>
+                </div>
+
+                <div class="bg-noduv-fondo p-4 rounded-lg">
+                    <h3 class="font-semibold text-noduv-texto">3. No hagas Spam</h3>
+                    <p class="text-sm">No publiques enlaces promocionales, publicidad o contenido repetitivo que no aporte valor.</p>
+                </div>
+
+                <div class="bg-noduv-fondo p-4 rounded-lg">
+                    <h3 class="font-semibold text-noduv-texto">4. Respeta la Integridad Académica</h3>
+                    <p class="text-sm">No compartas respuestas de exámenes en curso ni solicites ayuda para hacer trampa. Compartir apuntes de estudio está bien, pero el plagio no.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4 mt-8">
+                <button id="close-rules-modal" class="w-full bg-noduv-gris-claro hover:bg-noduv-gris-medio text-noduv-texto font-bold py-3 px-5 rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button id="accept-rules-button" class="w-full bg-noduv-exito hover:bg-green-600 text-noduv-azul font-bold py-3 px-5 rounded-lg transition-colors">
+                    Aceptar y Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- ===== FIN DEL NUEVO MODAL ===== -->
+
+    <!-- ===== MODAL PARA REPORTAR ===== -->
+    <div id="report-modal" class="modal fixed inset-0 z-50 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center p-4 hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-noduv-azul font-hammersmith">Reportar Comentario</h2>
+                <button id="close-report-modal" class="text-noduv-gris-medio hover:text-noduv-texto transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="report-form" class="space-y-6">
+                <p class="text-noduv-gris-medio">Estás a punto de reportar un comentario por violar las normas de la comunidad. Por favor, danos más detalles.</p>
+                <div>
+                    <label for="report-razon" class="block text-sm font-medium text-noduv-texto mb-2">Razón del Reporte</label>
+                    <select id="report-razon" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" required>
+                        <option value="" disabled selected>Selecciona una razón...</option>
+                        <option value="spam">Es spam o publicidad</option>
+                        <option value="odio">Es discurso de odio o acoso</option>
+                        <option value="trampa">Incurre en trampa académica</option>
+                        <option value="irrelevante">No es relevante o es ofensivo</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="report-detalles" class="block text-sm font-medium text-noduv-texto mb-2">Detalles Adicionales (Opcional)</label>
+                    <textarea id="report-detalles" rows="3" class="w-full px-4 py-3 border border-noduv-gris-claro rounded-xl text-noduv-texto placeholder-noduv-gris-medio transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-noduv-celeste focus:border-transparent" placeholder="Danos más contexto sobre el problema..."></textarea>
+                </div>
+                
+                <!-- Mensaje de Error/Éxito -->
+                <p id="report-message" class="text-sm text-center hidden"></p>
+                
+                <button type="submit" class="w-full bg-noduv-error hover:bg-red-700 text-white font-bold py-3 px-5 rounded-lg transition-colors shadow-lg">
+                    Enviar Reporte
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- ===== FIN DEL MODAL DE REPORTAR ===== -->
+
 
     <script src="scripts/dashboard.js" defer></script>
 
